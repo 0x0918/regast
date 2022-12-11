@@ -2,7 +2,11 @@
 **regast** is a static analyzer for Solidity codebases.
 
 ## Installation
-First, clone this repository and its submodules
+Prerequisites:
+* Python 3.10 or above
+* `pip3` installed
+
+Clone this repository and its submodules
 ```sh
 git clone --recurse-submodules https://github.com/MiloTruck/regast.git
 cd regast
@@ -43,4 +47,6 @@ pip3 install .
     - [ ] Incremental parsing
         - [ ] Find a way to save the "state"
         - [ ] Only run parsing and detectors on modified parts of code
+    - [ ] Linting and refactoring using detectors (eg. Gas Detectors)
     - [ ] CodeQL-like style of writing a detector and running in the editor
+        - This could just be the ability to execute individual detectors using the cmdline, and passing the output to VSCode to display somehow

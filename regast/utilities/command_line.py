@@ -69,7 +69,13 @@ def handle_arguments() -> Tuple[List[str], List[str], Dict[str, str]]:
 
     args = parser.parse_args()
     contract_fnames = parse_argument_contract(args.contract)
-    files_in_scope = parse_argument_scope(contract_fnames, args.scope)
-    remappings = parse_argument_remap(args.remap)
+
+    files_in_scope = None
+    if args.scope is not None:
+        files_in_scope = parse_argument_scope(contract_fnames, args.scope)
+        
+    remappings = None
+    if args.remap is not None:
+        remappings = parse_argument_remap(args.remap)
 
     return contract_fnames, files_in_scope, remappings

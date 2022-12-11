@@ -3,10 +3,10 @@
 import inspect
 from typing import Dict, List
 
+from regast.utilities.setup_dependencies import setup_antlr4
 from regast.utilities.command_line import handle_arguments
 from regast.detectors import all_detectors
 from regast.detectors.detector import Detector, DetectorClassification
-from regast.ast_generator import initialize_parser
 from regast.detectors.result import Result
 from regast.regast import Regast
 from regast.utilities.output import output_to_stdout
@@ -16,21 +16,8 @@ def get_results_from_ast(
     contract_fnames: List[str], 
     files_in_scope: List[str]
 ) -> Dict[DetectorClassification, Dict[Detector, List[Result]]]:
-    # Initialize ast generator (tree-sitter)
-    parser = initialize_parser()
-
-    # Parse contract files in asts
-    fname_to_ast = {}   
-    for fname in contract_fnames:
-        try:
-            with open(fname, 'rb') as f:
-                data = f.read()
-                fname_to_ast[fname] = parser.parse(data)
-        except Exception as e:
-            print(f'[!] Failed to parse {fname}, error: {e}')
-
     # Initialize regast class, which parses ast
-    regast = Regast(contract_fnames, files_in_scope, fname_to_ast)
+    regast = Regast(contract_fnames, files_in_scope)
 
     # Run detectors and filter results
     for detector in detectors:
@@ -54,4 +41,5 @@ def main():
     output_to_stdout(results)
 
 if __name__ == '__main__':
+    setup_antlr4()
     main()
