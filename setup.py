@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='regast',
-    version='1.0.0',
+    version='0.1.0',
     description='A static analyzer for Solidity, built upon regex and ASTs.',
     author='MiloTruck',
     packages=find_packages(),
