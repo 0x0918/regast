@@ -26,10 +26,6 @@ class SourceUnit(Context):
         self._type_definitions = []
         self._using_for = []
 
-        for c in self.contracts:
-            print(c.context.contractPart()[0].stateVariableDeclaration().typeName().getText())
-                
-
     @property
     def pragma_directives(self) -> List[Pragma]:
         if not self._pragma_directives:

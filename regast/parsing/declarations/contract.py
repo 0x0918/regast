@@ -1,7 +1,5 @@
-import enum
 from typing import List
 
-from regast.exceptions import ParsingError
 from regast.parsing.context.context import Context
 from regast.parsing.declarations.custom_error import CustomError
 from regast.parsing.declarations.enum import Enum
@@ -9,30 +7,8 @@ from regast.parsing.declarations.event import Event
 from regast.parsing.declarations.function import Function
 from regast.parsing.declarations.struct import Struct
 from regast.parsing.expressions.identifier import Identifier
+from regast.parsing.tokens import ContractType
 from regast.parsing.variables.state_variable import StateVariable
-
-class ContractTypeTokens:
-    tokens = ['contract', 'interface', 'abstract', 'library']
-
-class ContractType(ContractTypeTokens, enum.Enum):
-    CONTRACT = 0
-    INTERFACE = 1
-    ABSTRACT = 2
-    LIBRARY = 3
-
-    @classmethod
-    def token_to_enum(cls, token):
-        if token not in cls.tokens:
-            raise ParsingError(f"Failed to convert {token} to ContractType")
-        return cls(cls.tokens.index(token))
-
-    def __str__(self):
-        return self.tokens[self.value]
-
-    def __eq__(self, other):
-        if isinstance(other, str):
-            return str(self) == other
-        return self == other
 
 class Contract(Context):
     def __init__(self, ctx):    # ContractDefinitionContext 
