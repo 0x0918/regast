@@ -1,11 +1,15 @@
 from typing import List, Dict, Optional
 
 from regast.exceptions import ParsingError
+from regast.parsing.context.context import Context
+from regast.parsing.expressions.identifier import Identifier
 
-class Import:
-    def __init__(self, ctx):
-        self._filename: str = ctx.importPath().getText().strip("\"")
-        self._identifiers: List[str] = [x.getText() for x in ctx.identifier()]
+class Import(Context):
+    def __init__(self, ctx):    # ImportDeclarationContext
+        super().__init__(ctx)
+
+        self._filename: str = None
+        self._identifiers: List[Identifier] = []
         self._imported: List[str] = []
         self._renaming: Dict[str, str] = {}
 
@@ -25,20 +29,24 @@ class Import:
 
     @property
     def filename(self) -> str:
+        if not self._filename:
+            self._filename = self.context.importPath().getText().strip("\"")
         return self._filename
 
     @property
-    def identifiers(self) -> str:
-        return self._identifiers
+    def identifiers(self) -> List[Identifier]:
+        if not self._identifiers:
+            self._identifiers = [Identifier(x) for x in self.context.identifier()]
+        return list(self._identifiers)
 
     @property
     def alias(self) -> Optional[str]:
-        if self._identifiers:
-            return self._identifiers[0]
+        if self.identifiers:
+            return self.identifiers[0]
 
     @property
     def imported_objects(self) -> List[str]:
-        return self._imported
+        return list(self._imported)
 
     @property
     def imported_object_to_alias(self, imported_object: str) -> Optional[str]:
@@ -47,18 +55,18 @@ class Import:
 
     def __str__(self):
         s = "import "
-        if self._imported:
+        if self.imported_objects:
             s += "{ "
-            for imported_object in self._imported:
+            for imported_object in self.imported_objects:
                 s += imported_object
                 if imported_object in self._renaming:
                     s += " as " + self._renaming[imported_object]
-                if imported_object != self._imported[-1]:
+                if imported_object != self.imported_objects[-1]:
                     s += ", "
             s += "} from"
-        s += "\"" + self._filename + "\""
-        if self._identifiers:
-            s += " as " + self._identifiers[0]
+        s += "\"" + self.filename + "\""
+        if self.identifiers:
+            s += " as " + str(self._identifiers[0])
         return s
 
 
