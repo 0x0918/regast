@@ -146,21 +146,24 @@ class NonElementaryType(Exception):
     pass
 
 class ElementaryType(Type):
-    def __init__(self, ctx):    # ElementaryTypeNameContext
+    def __init__(self, ctx, is_address_payable=False):    # ElementaryTypeNameContext
         super().__init__(ctx)
 
-        t = self.context.getText()
-        if t not in ElementaryTypeName:
-            raise NonElementaryType(f"Failed to parse ElementaryType: {t}")
-    
-        if t == "uint":
-            t = "uint256"
-        elif t == "int":
-            t = "int256"
-        elif t == "byte":
-            t = "bytes1"
+        if is_address_payable:
+            self._type: str = "address payable"
+        else:
+            t = self.context.getText()
+            if t not in ElementaryTypeName:
+                raise NonElementaryType(f"Failed to parse ElementaryType: {t}")
+        
+            if t == "uint":
+                t = "uint256"
+            elif t == "int":
+                t = "int256"
+            elif t == "byte":
+                t = "bytes1"
 
-        self._type: str = t
+            self._type: str = t
 
     @property
     def is_dynamic(self) -> bool:
@@ -185,7 +188,7 @@ class ElementaryType(Type):
             return int(t[len("int") :])
         if t == "bool":
             return int(8)
-        if t == "address":
+        if t == "address" or t == "address payable":
             return int(160)
         if t.startswith("bytes") and t != "bytes":
             return int(t[len("bytes") :]) * 8
@@ -198,6 +201,10 @@ class ElementaryType(Type):
         if self.size is None:
             return 32, True
         return int(self.size / 8), False
+
+    @property
+    def is_payable(self) -> bool:
+        return self.__type == "address payable"
 
     @property
     def min(self) -> int:
@@ -217,6 +224,6 @@ class ElementaryType(Type):
     def __eq__(self, other):
         if isinstance(other, str):
             return self.type == other
-        elif not isinstance(other, ElementaryType):
-            return False
-        return self.type == other.type
+        elif isinstance(other, ElementaryType):
+            return self.type == other.type
+        return False

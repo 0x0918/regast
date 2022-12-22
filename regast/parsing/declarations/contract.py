@@ -38,7 +38,7 @@ class Contract(Context):
     def contract_type(self) -> ContractType:
         if not self._contract_type:
             contract_type_token = self.context.getChild(0).getText()
-            self._contract_type = ContractType.token_to_enum(contract_type_token)
+            self._contract_type = ContractType(contract_type_token)
         return self._contract_type
 
     @property
@@ -55,6 +55,6 @@ class Contract(Context):
                 if state_variable_declaration:
                     self._state_variables.append(StateVariable(state_variable_declaration))
                     
-        return self._state_variables
+        return list(self._state_variables)
 
     # TODO Still need to handle inheritanceSpecifiers (self.context.inheritanceSpecifier())

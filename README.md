@@ -18,6 +18,8 @@ pip3 install .
 
 
 ## Implementation
+* [ANTLR Grammar](https://github.com/solidity-parser/antlr/blob/492c7f161300fb53d7206606595e36b0d95c20c6/Solidity.g4)
+* [Grammar from offical docs](https://docs.soliditylang.org/en/v0.8.17/grammar.html)
 
 
 ## TODO

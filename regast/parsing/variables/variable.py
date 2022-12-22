@@ -37,7 +37,7 @@ class Variable(Context):
             if callable(getattr(self.context, 'storageLocation', None)):
                 storage_location = self.context.storageLocation()
                 if storage_location:
-                    self._storage_location = VariableStorageLocation.token_to_enum(storage_location.getText())
+                    self._storage_location = VariableStorageLocation(storage_location.getText())
                 else:
                     self._storage_location = VariableStorageLocation.MEMORY
         return self._storage_location
@@ -54,4 +54,19 @@ class Variable(Context):
     @property
     def is_initialized(self) -> bool:
         return bool(self.initial_expression)
+
+    def __str__(self):
+        s = str(self.type)
+        if self.storage_location:
+            s += ' ' + str(self.storage_location)
+        if self.name:
+            s += ' ' + str(self.name)
+        if self.is_initialized:
+            s += ' = ' + str(self.initial_expression)
+        return s
+
+    def __eq__(self, other):
+        if isinstance(other, Variable):
+            return self.type == other.type and self.name == other.name and self.storage_location == other.storage_location and self.initial_expression == other.initial_expression
+        return False
             

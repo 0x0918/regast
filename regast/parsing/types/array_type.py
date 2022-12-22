@@ -11,7 +11,7 @@ class ArrayType(Type):
 
         self._type: Type = None
         self._expression: Expression = None
-
+        
     @property
     def type(self) -> Type:
         if not self._type:
@@ -42,9 +42,9 @@ class ArrayType(Type):
         return str(self.type) + '[]'
 
     def __eq__(self, other):
-        if not isinstance(other, ArrayType):
-            return False
-        return self._type == other.type and self.length == other.length
+        if isinstance(other, ArrayType):
+            return self.type == other.type and self.length == other.length
+        return False
 
 # TODO Implement length_value, getting the value of length. Then, add static array storage size calculation
 """

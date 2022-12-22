@@ -1,4 +1,4 @@
-from regast.parsing.tokens import StateVariableMutability, StateVariableVisibility
+from regast.parsing.tokens import Visibility, StateVariableMutability
 from regast.parsing.variables.variable import Variable
 
 
@@ -7,6 +7,6 @@ class StateVariable(Variable):
         super().__init__(ctx)
 
         self._mutability: StateVariableMutability = None
-        self._visibility: StateVariableVisibility = None
+        self._visibility: Visibility = None
 
 # TODO To complete
