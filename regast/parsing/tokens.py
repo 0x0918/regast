@@ -1,10 +1,5 @@
 from enum import Enum
 
-class VariableStorageLocation(str, Enum):
-    MEMORY = 'memory'
-    STORAGE = 'storage'
-    CALLDATA = 'calldata'
-
 class Visibility(str, Enum):
     PUBLIC = 'public'
     PRIVATE = 'private'
