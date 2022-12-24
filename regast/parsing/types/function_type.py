@@ -14,8 +14,6 @@ class FunctionType(Type):
         self._parameters: List[FunctionTypeVariable] = []
         self._return_parameters: List[FunctionTypeVariable] = []
 
-        raise NotImplementedError(f'{self.__class__} not implemented.')
-
     @property
     def parameters(self) -> List[FunctionTypeVariable]:
         if not self._parameters:
@@ -37,7 +35,7 @@ class FunctionType(Type):
             external = self.context.ExternalKeyword()
 
             if len(internal) + len(external) > 1:
-                raise ParsingError(f'Failed to parse {self.context.getText()} to {self.__class__}')
+                raise ParsingError(f'Failed to parse {self.context.getText()} to {self.__class__.__name__}')
                 
             if internal:
                 self._visibility = Visibility.INTERNAL
@@ -51,7 +49,7 @@ class FunctionType(Type):
             state_mutability = self.context.stateMutability()
             
             if len(state_mutability) > 1:
-                raise ParsingError(f'Failed to parse {self.context.getText()} to {self.__class__}')
+                raise ParsingError(f'Failed to parse {self.context.getText()} to {self.__class__.__name__}')
 
             if state_mutability:
                 self._state_mutability = StateMutability(state_mutability[0].getText())

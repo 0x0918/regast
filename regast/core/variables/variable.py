@@ -15,9 +15,9 @@ class Variable(Core):
     def __init__(
         self, 
         type: Type,
-        name: Optional[Identifier],
-        data_location: Optional[DataLocation],
-        expression: Optional[Expression]
+        name: Optional[Identifier] = None,
+        data_location: Optional[DataLocation] = None,
+        expression: Optional[Expression] = None
     ):
         super().__init__()
 
@@ -57,7 +57,7 @@ class Variable(Core):
         return s
 
     def __eq__(self, other):
-        if isinstance(other, Variable):
+        if isinstance(other, self.__class__):
             return self.type == other.type and self.name == other.name and self.data_location == other.data_location and self.initial_expression == other.initial_expression
         return False
             

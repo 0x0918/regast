@@ -1,20 +1,8 @@
-from enum import Enum
 from typing import List, Optional, Tuple
+from regast.core.common import StateMutability, Visibility
 
 from regast.core.types.type import Type
 from regast.core.variables.function_type_variable import FunctionTypeVariable
-
-class Visibility(str, Enum):
-    PUBLIC = 'public'
-    PRIVATE = 'private'
-    INTERNAL = 'internal'
-    EXTERNAL = 'external'
-
-class StateMutability(str, Enum):
-    NON_PAYABLE = ''
-    PURE = 'pure'
-    CONSTANT = 'constant'
-    VIEW = 'view'
 
 class FunctionType(Type):
     def __init__(
