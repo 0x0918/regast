@@ -1,28 +1,27 @@
 from typing import List, Optional
 from regast.core.expressions.expression import Expression
+from regast.core.expressions.struct_expression import StructArguments
 
 class CallExpression(Expression):
     def __init__(
         self,
         called: Expression,
+        struct_arguments: Optional[StructArguments] = None,
         arguments: List[Expression] = [],
-        gas: Optional[Expression] = None,
-        value: Optional[Expression] = None,
-        salt: Optional[Expression] = None,
-
     ):
         super().__init__()
     
         self._called: Expression = called
+        self._struct_arguments: Optional[StructArguments] = struct_arguments
         self._arguments: List[Expression] = arguments
-
-        self._gas: Optional[Expression] = gas
-        self._value: Optional[Expression] = value
-        self._salt: Optional[Expression] = salt
 
     @property
     def called(self) -> Expression:
         return self._called
+
+    @property
+    def struct_arguments(self) -> Optional[StructArguments]:
+        return self._struct_arguments
 
     @property
     def arguments(self) -> List[Expression]:
@@ -30,29 +29,28 @@ class CallExpression(Expression):
 
     @property
     def gas(self) -> Optional[Expression]:
-        return self._gas
+        if self.struct_arguments and "gas" in self.struct_arguments.fields:
+            return self.struct_arguments.get_argument_by_field("gas")
 
     @property
     def value(self) -> Optional[Expression]:
-        return self._value
+        if self.struct_arguments and "value" in self.struct_arguments.fields:
+            return self.struct_arguments.get_argument_by_field("value")
 
     @property
     def salt(self) -> Optional[Expression]:
-        return self._salt
+        if self.struct_arguments and "salt" in self.struct_arguments.fields:
+            return self.struct_arguments.get_argument_by_field("salt")
 
     def __str__(self):
         s = str(self.called)
-        if self.gas or self.value or self.salt:
-            gas = f"gas: {str(self.gas)}" if self.gas else ""
-            value = f"value: {str(self.value)}" if self.value else ""
-            salt = f"salt: {str(self.salt)}" if self.salt else ""
-
-            s += "{" + ", ".join([x for x in [gas, value, salt] if x]) + "}"
+        if self.struct_arguments:
+            s += str(self.struct_arguments)
         s += "(" + ", ".join([str(x) for x in self.arguments]) + ")"
         return s
 
     def __eq__(self, other):
         if isinstance(other, CallExpression):
-            return self.called == other.called and self.arguments == other.arguments and self.gas == other.gas and self.value == other.value and self.salt == other.salt
+            return self.called == other.called and self.struct_arguments == other.struct_arguments and self.arguments == other.arguments 
         return False
             

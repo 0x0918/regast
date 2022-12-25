@@ -1,4 +1,4 @@
 from regast.core.core import Core
 
-class Expression(Core):
+class Statement(Core):
     pass

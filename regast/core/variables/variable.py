@@ -35,7 +35,7 @@ class Variable(Core):
         return self._name
 
     @property
-    def data_location(self) -> DataLocation:
+    def data_location(self) -> Optional[DataLocation]:
         return self._data_location
 
     @property
