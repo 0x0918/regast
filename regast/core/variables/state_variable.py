@@ -40,19 +40,21 @@ class StateVariable(Variable):
         return Visibility.PUBLIC
 
     @property
-    def declared_visibility(self) -> Optional[str]:
+    def declared_visibility(self) -> Optional[Visibility]:
         """
         This is used to differentiate state variables explicitly declared public
         """
-        if self._visibility:
-            return self._visibility.value
-        return None
+        return self._visibility
 
     @property
     def mutability(self) -> StateVariableMutability:
         if self._mutability:
             return self._mutability
         return StateVariableMutability.MUTABLE
+
+    @property
+    def declared_mutability(self) -> Optional[StateVariableMutability]:
+        return self._mutability
 
     @property
     def overrides(self) -> List[UserDefinedType]:

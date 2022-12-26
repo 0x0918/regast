@@ -1,6 +1,5 @@
-from typing import List, Optional
+from typing import Optional
 
-from regast.core.core import Core
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.identifier import Identifier
 from regast.core.types.type import Type

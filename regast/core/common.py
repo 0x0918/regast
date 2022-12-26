@@ -11,3 +11,4 @@ class StateMutability(str, Enum):
     PURE = 'pure'
     CONSTANT = 'constant'
     VIEW = 'view'
+    PAYABLE = 'payable'
