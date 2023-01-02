@@ -1,2 +1,0 @@
-class Struct:
-    pass

@@ -2,7 +2,6 @@ from typing import Dict, List
 
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
-from regast.parsing.parser import Parser
 
 class Regast:
     def __init__(

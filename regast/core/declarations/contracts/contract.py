@@ -11,7 +11,7 @@ from regast.core.declarations.functions.modifier import Modifier
 from regast.core.declarations.functions.receive_function import ReceiveFunction
 from regast.core.declarations.struct import Struct
 from regast.core.declarations.type_definition import TypeDefinition
-from regast.core.directives.using_directive import UsingDirective
+from regast.core.declarations.directives.using_directive import UsingDirective
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.identifier import Identifier
 from regast.core.expressions.struct_expression import StructArguments

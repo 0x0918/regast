@@ -3,7 +3,7 @@
 import inspect
 from typing import Dict, List
 
-from regast.utilities.setup_dependencies import setup_antlr4
+from regast.utilities.setup_dependencies import setup_antlr4, setup_treesitter
 from regast.utilities.command_line import handle_arguments
 from regast.detectors import all_detectors
 from regast.detectors.detector import Detector, DetectorClassification
@@ -41,5 +41,5 @@ def main():
     output_to_stdout(results)
 
 if __name__ == '__main__':
-    setup_antlr4()
-    main()
+    setup_treesitter()
+    # main()
