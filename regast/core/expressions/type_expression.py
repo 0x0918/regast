@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.types.type import Type
 
@@ -13,6 +14,10 @@ class TypeExpression(Expression):
     @property
     def type(self) -> Type:
         return self._type
+
+    @property
+    def children(self) -> List:
+        return self.type
 
     def __str__(self):
         return "type(" + str(type) + ")"

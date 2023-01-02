@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 
@@ -31,6 +32,10 @@ class Pragma(Core):
     @property
     def is_abi_encoder_v2(self) -> bool:
         return self.name == "experimental" and self.value == "ABIEncoderV2"
+
+    @property
+    def children(self) -> List:
+        return [self.name]
 
     def __eq__(self, other):
         if isinstance(other, Pragma):

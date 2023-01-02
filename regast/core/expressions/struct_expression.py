@@ -28,6 +28,10 @@ class StructArguments(Expression):
         if field in self.fields:
             return self.arguments[self.fields.index(field)]
 
+    @property
+    def children(self) -> List:
+        return self.fields + self.arguments
+
     def __str__(self):
         return "{" + ", ".join([str(self.fields[i]) + ": " + str(self.arguments[i]) for i in range(len(self.fields))]) + "}"
 
@@ -37,7 +41,7 @@ class StructArguments(Expression):
         return False
 
 
-class StructExpression(StructArguments):
+class StructExpression(Expression):
     def __init__(
         self,
         struct_name: Expression,
@@ -47,10 +51,26 @@ class StructExpression(StructArguments):
         super().__init__(fields=fields, arguments=arguments)
     
         self._struct_name: Expression = struct_name
+        self._struct_arguments: StructArguments = StructArguments(fields, arguments)
+
+        # Not sure if this is good practice...
+        self.get_argument_by_field = self._struct_arguments.get_argument_by_field
 
     @property
     def struct_name(self) -> Expression:
         return self._struct_name
+
+    @property
+    def fields(self) -> List[Expression]:
+        self._struct_arguments.fields
+
+    @property
+    def arguments(self) -> List[Expression]:
+        return self._struct_arguments.arguments
+
+    @property
+    def children(self) -> List:
+        return [self.struct_name] + self._struct_arguments.children
 
     def __str__(self):
         s = str(self.struct_name) + "{"

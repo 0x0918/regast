@@ -22,6 +22,10 @@ class Enum(Core):
     def values(self) -> List[Identifier]:
         return list(self._values)
 
+    @property
+    def children(self) -> List:
+        return [self.name] + self.values
+
     def __eq__(self, other):
         if isinstance(other, Enum):
             return self.name == other.name and self.values == other.values

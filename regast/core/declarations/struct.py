@@ -23,6 +23,10 @@ class Struct(Core):
     def members(self) -> List[StructMember]:
         return list(self._members)
 
+    @property
+    def children(self) -> List:
+        return [self.name] + self.members
+
     def __eq__(self, other):
         if isinstance(other, Struct):
             return self.name == other.name and self.members == other.members

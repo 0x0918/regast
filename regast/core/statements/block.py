@@ -21,6 +21,10 @@ class Block(Statement):
     def is_unchecked(self) -> bool:
         return self._unchecked
 
+    @property
+    def children(self) -> List:
+        return self.statements
+
     def __eq__(self, other):
         if isinstance(other, Block):
             return self.statements == other.statements

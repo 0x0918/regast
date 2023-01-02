@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List
 
 from regast.core.expressions.expression import Expression
 from regast.exceptions import RegastException
@@ -82,6 +83,10 @@ class UnaryOperation(Expression):
     @property
     def is_prefix(self) -> bool:
         return self.operator not in [UnaryOperator.PLUSPLUS_POST, UnaryOperator.MINUSMINUS_POST]
+
+    @property
+    def children(self) -> List:
+        return [self.expression]
 
     def __str__(self):
         if not self.is_prefix:

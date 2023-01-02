@@ -29,7 +29,15 @@ class Event(Core):
     def is_anonymous(self) -> bool:
         return self._anonymous
 
+    @property
+    def children(self) -> List:
+        return [self.name] + self.parameters
+
     def __eq__(self, other):
         if isinstance(other, Event):
-            return self.name == other.name and self.parameters == other.parameters and self.is_anonymous == other.is_anonymous
+            return (
+                self.name == other.name and 
+                self.parameters == other.parameters and 
+                self.is_anonymous == other.is_anonymous
+            )
         return False

@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import List, Optional
 
 from regast.core.core import Core
 from regast.core.expressions.expression import Expression
@@ -45,6 +45,10 @@ class Variable(Core):
     @property
     def is_initialized(self) -> bool:
         return bool(self.initial_expression)
+
+    @property
+    def children(self) -> List:
+        return [self.type] + [x for x in [self.name, self.initial_expression] if x]
 
     def __str__(self):
         s = str(self.type)

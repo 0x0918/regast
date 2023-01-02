@@ -39,6 +39,10 @@ class FunctionType(Type):
     def storage_size(self) -> Tuple[int, bool]:
         return 24, False
 
+    @property
+    def children(self) -> List:
+        return self.parameters + self.return_parameters
+
     def __str__(self):
         s = 'function'
         if self.parameters:

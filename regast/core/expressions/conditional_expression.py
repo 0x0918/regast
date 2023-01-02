@@ -28,6 +28,10 @@ class ConditionalExpression(Expression):
     @property
     def false_expression(self) -> Expression:
         return self._expressions[2]
+        
+    @property
+    def children(self) -> List:
+        return self.expressions
 
     def __str__(self):
         return str(self.condition) + " ? " + str(self.true_expression) + " : " + str(self.false_expression)

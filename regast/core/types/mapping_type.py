@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import List, Tuple, Union
 
 from regast.core.types.elementary_type import ElementaryType
 from regast.core.types.type import Type
@@ -26,6 +26,10 @@ class MappingType(Type):
     @property
     def storage_size(self) -> Tuple[int, bool]:
         return 32, True
+
+    @property
+    def children(self) -> List:
+        return [self.key_type, self.value_type]
 
     def __str__(self):
         return "mapping(" + str(self.key_type) + " => " + str(self.value_type) + ")"

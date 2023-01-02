@@ -36,6 +36,10 @@ class VariableDeclarationStatement(Statement):
     def initial_expression(self) -> Optional[Expression]:
         return self.variable.initial_expression
 
+    @property
+    def children(self) -> List:
+        return self.variable.children
+
     def __eq__(self, other):
         if isinstance(other, VariableDeclarationStatement):
             return self.variable == other.variable
@@ -48,16 +52,48 @@ class VariableDeclarationFromTupleStatement(Statement):
     ):
         super().__init__()
 
-        self._variables: List[LocalVariable] = variables
+        # Ensure all variables have the same initial_expression
+        assert len(set([v.initial_expression for v in variables])) == 1
 
+        self._variables: List[LocalVariable] = variables
+        
+        self._types: List[Type] = []
+        self._names: List[Identifier] = []
+        self._data_locations: List[Optional[DataLocation]] = []
+        
     @property
     def variables(self) -> List[LocalVariable]:
         return list(self._variables)
 
     @property
+    def types(self) -> List[Type]:
+        if not self._types:
+            self._types = [v.type for v in self.variables]
+        return self._types
+
+    @property
+    def names(self) -> List[Identifier]:
+        if not self._names:
+            self._names = [v.name for v in self.variables]
+        return self._names
+
+    @property
+    def data_locations(self) -> Optional[DataLocation]:
+        if not self._data_locations:
+            self._data_locations = [v.data_location for v in self.variables]
+        return self._data_locations
+
+    @property
     def initial_expression(self) -> Optional[Expression]:
         return self.variables[0].initial_expression
 
+    @property
+    def children(self) -> List:
+        children = self.types + self.names
+        if self.initial_expression:
+            children.append(self.initial_expression)
+        return children
+        
     def __eq__(self, other):
         if isinstance(other, VariableDeclarationFromTupleStatement):
             return self.variables == other.variables
@@ -88,7 +124,16 @@ class VariableDeclarationWithVarStatement(Statement):
     def initial_expression(self) -> Optional[Expression]:
         return self._expression
 
+    @property
+    def children(self) -> List:
+        if self.initial_expression:
+            return self.names + [self.initial_expression]
+        return self.names        
+
     def __eq__(self, other):
         if isinstance(other, VariableDeclarationWithVarStatement):
             return self.names == other.names and self.initial_expression == other.initial_expression
         return False
+
+# TODO Need to account for the overlap in .children of this and localvariable
+# Idea: Implement __hash__ in core, then do list(set(children))

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 from regast.core.expressions.identifier import Identifier
 
 from regast.core.variables.variable import Variable

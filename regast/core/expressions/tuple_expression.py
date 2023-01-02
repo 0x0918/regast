@@ -16,6 +16,10 @@ class TupleExpression(Expression):
         return list(self._expressions)
 
     @property
+    def children(self) -> List:
+        return self.expressions
+
+    @property
     def __str__(self):
         return "(" + ", ".join([str(x) for x in self.expressions]) + ")"
     

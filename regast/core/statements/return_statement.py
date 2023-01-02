@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
@@ -15,6 +15,10 @@ class ReturnStatement(Statement):
     @property
     def return_value(self) -> Optional[Expression]:
         return self._return_value
+
+    @property
+    def children(self) -> List:
+        return [self.return_value] if self.return_value else []
 
     def __eq__(self, other):
         if isinstance(other, ReturnStatement):

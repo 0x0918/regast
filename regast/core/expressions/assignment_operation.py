@@ -46,6 +46,10 @@ class AssignmentOperation(Expression):
     def operator(self) -> AssignmentOperator:
         return self._operator
 
+    @property
+    def children(self) -> List:
+        return self.expressions
+
     def __str__(self):
         return str(self.left_expression) + ' ' + str(self.operator) + ' ' + str(self.right_expression)
 

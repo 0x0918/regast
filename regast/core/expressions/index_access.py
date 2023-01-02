@@ -24,6 +24,10 @@ class IndexAccess(Expression):
     @property
     def index(self) -> Expression:
         return self._expressions[1]
+        
+    @property
+    def children(self) -> List:
+        return self.expressions
 
     def __str__(self):
         return str(self.object) + "[" + str(self.index) + "]"

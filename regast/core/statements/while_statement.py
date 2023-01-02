@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
 
@@ -23,6 +24,10 @@ class WhileStatement(Statement):
     @property
     def body(self) -> Statement:
         return self._body
+
+    @property
+    def children(self) -> List:
+        return [self.condition, self.body]
 
     def __eq__(self, other):
         if isinstance(other, WhileStatement):

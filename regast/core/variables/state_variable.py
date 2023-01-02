@@ -60,6 +60,10 @@ class StateVariable(Variable):
     def overrides(self) -> List[UserDefinedType]:
         return list(self._overrides)
 
+    @property
+    def children(self) -> List:
+        return self.overrides + super().children
+
     def __str__(self):
         s = str(self.type)
         if self.declared_visibility:

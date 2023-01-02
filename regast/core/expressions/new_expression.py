@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.types.type import Type
 
@@ -17,6 +18,10 @@ class NewExpression(Expression):
     @property
     def __str__(self):
         return "new " + self.type
+
+    @property
+    def children(self) -> List:
+        return [self.type]
     
     @property
     def __eq__(self, other):

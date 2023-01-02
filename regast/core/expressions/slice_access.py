@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 
@@ -26,6 +26,10 @@ class SliceAccess(Expression):
     @property
     def stop(self) -> Optional[Expression]:
         return self._stop
+
+    @property
+    def children(self) -> List:
+        return [self.object] + [x for x in [self.start, self.stop] if x] 
 
     @property
     def __str__(self):

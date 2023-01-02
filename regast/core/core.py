@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Core:
     def __init__(self):
         self._context = None
@@ -9,3 +12,7 @@ class Core:
     @context.setter
     def context(self, ctx):
         self._context = ctx
+
+    @property
+    def children(self) -> List:
+        return []

@@ -86,6 +86,20 @@ class SourceUnit(Core):
     def type_definitions(self) -> List[TypeDefinition]:
         return list(self._type_definitions)
 
+    @property
+    def children(self) -> List:
+        children = self.pragma_directives
+        children += self.import_directives
+        children += self.using_directives
+        children += self.contracts
+        children += self.enums
+        children += self.structs
+        children += self.functions
+        children += self.constants
+        children += self.custom_errors
+        children += self.type_definitions
+        return children
+
     def __eq__(self, other):
         if isinstance(other, SourceUnit):
             return (

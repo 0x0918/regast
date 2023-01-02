@@ -32,9 +32,17 @@ class CatchClause(Core):
     def error(self) -> Optional[Identifier]:
         return self._error
 
+    @property
+    def children(self) -> List:
+        children = [self.body] + self.parameters
+        if self.error:
+            children.append(self.error)
+        return children
+
     def __eq__(self, other):
         if isinstance(other, CatchClause):
             return self.block == other.block and self.parameters == other.parameters and self.error == other.error
+        return False
 
 class TryStatement(Statement):
     def __init__(
@@ -66,6 +74,10 @@ class TryStatement(Statement):
     @property
     def parameters(self) -> List[Parameter]:
         return list(self._try_expression)
+
+    @property
+    def children(self) -> List:
+        return [self.try_expression, self.body] + self.catch_clauses + self.parameters
 
     def __eq__(self, other):
         if isinstance(other, TryStatement):

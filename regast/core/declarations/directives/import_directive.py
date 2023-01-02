@@ -39,6 +39,13 @@ class Import(Core):
         if imported_object in self._renaming:
             return self._renaming[imported_object]
 
+    @property
+    def children(self) -> List:
+        children = self.imported_objects + list(self.renaming.values())
+        if self.alias:
+            children.append(self.alias)
+        return children
+            
     def __eq__(self, other):
         if isinstance(other, Import):
             return self.import_path == other.import_path and self.imported_objects == other.imported_objects and self.alias == other.alias and self.renaming == other.renaming

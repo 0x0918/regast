@@ -35,6 +35,22 @@ class ModifierInvocation(Core):
     def arguments(self) -> List[Expression]:
         return list(self._arguments)
 
+    @property
+    def children(self) -> List:
+        children = [self.name] + self.arguments
+        if self.struct_arguments:
+            children.append(self.struct_arguments)
+        return children
+
+    def __eq__(self, other):
+        if isinstance(other, ModifierInvocation):
+            return (
+                self.name == other.name and
+                self.struct_arguments == other.struct_arguments and
+                self.arguments == other.arguments
+            )
+        return False
+
 class Function(FunctionBody):
     def __init__(
         self,
@@ -108,6 +124,14 @@ class Function(FunctionBody):
     @property
     def overrides(self) -> List[UserDefinedType]:
         return list(self._overrides)
+
+    @property
+    def children(self) -> List:
+        children = [self.name]
+        children += self.parameters, self.return_parameters
+        children += self.modifiers
+        children += self.overrides
+        return children
 
     def __eq__(self, other):
         if isinstance(other, Function):

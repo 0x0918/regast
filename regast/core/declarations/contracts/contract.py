@@ -44,6 +44,23 @@ class InheritanceSpecifier(Core):
     def arguments(self) -> List[Expression]:
         return list(self._arguments)
 
+    @property
+    def children(self):
+        children = [self.name] + self.arguments
+        if self.struct_arguments:
+            children.append(self.struct_arguments)
+            
+        return children
+
+    def __eq__(self, other):
+        if isinstance(other, InheritanceSpecifier):
+            return (
+                self.name == other.name and
+                self.struct_arguments == other.struct_arguments and
+                self.arguments == other.arguments
+            )
+        return False
+
 class Contract(Core):
     def __init__(
         self,
@@ -151,7 +168,28 @@ class Contract(Core):
     @property
     def using_directives(self) -> List[UsingDirective]:
         return list(self._using_directives)
-            
+
+    @property
+    def children(self) -> List:
+        children = [self.name]
+
+        children += [x for x in [
+            self.constructor,
+            self.fallback_function,
+            self.receive_function
+        ] if x]
+
+        children += self.inheritance_specifiers
+        children += self.functions + self.modifiers
+        children += self.structs + self.enums
+        children += self.type_definitions
+        children += self.state_variables
+        children += self.events
+        children += self.custom_errors
+        children += self.using_directives
+
+        return children
+
     def __eq__(self, other):
         if isinstance(other, Contract):
             return (

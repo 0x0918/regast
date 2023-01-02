@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.types.elementary_type import ElementaryType
 
@@ -20,6 +21,10 @@ class TypeCastExpression(Expression):
     def casted_expression(self) -> Expression:
         return self._expression
     
+    @property
+    def children(self) -> List:
+        return [self.type, self.casted_expression]
+
     def __str__(self):
         return str(self.type) + "(" + str(self.casted_expression) + ")"
 

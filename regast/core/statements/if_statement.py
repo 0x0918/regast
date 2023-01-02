@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
@@ -31,6 +31,14 @@ class IfStatement(Statement):
     def false_body(self) -> Optional[Statement]:
         return self._false_body
 
+    @property
+    def children(self) -> List:
+        children = [self.condition, self.true_body]
+        if self.false_body:
+            children.append(self.false_body)
+        return children
+
     def __eq__(self, other):
         if isinstance(other, IfStatement):
             return self.condition == other.condition and self.true_body == other.true_body and self.false_body == other.false_body
+        return False

@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.expressions.call_expression import CallExpression
 from regast.core.statements.statement import Statement
 
@@ -13,6 +14,10 @@ class EmitStatement(Statement):
     @property
     def call(self) -> CallExpression:
         return self._call
+
+    @property
+    def children(self) -> List:
+        return [self.call]
 
     def __eq__(self, other):
         if isinstance(other, EmitStatement):

@@ -23,6 +23,10 @@ class CustomError(Core):
     def parameters(self) -> List[ErrorParameter]:
         return list(self._parameters)
 
+    @property
+    def children(self) -> List:
+        return [self.name] + self.parameters
+
     def __eq__(self, other):
         if isinstance(other, CustomError):
             return self.name == other.name and self.parameters == other.parameters

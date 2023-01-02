@@ -22,6 +22,10 @@ class MemberAccess(Expression):
     def member(self) -> Identifier:
         return self._member
 
+    @property
+    def children(self) -> List:
+        return [self.object + self.member]
+
     def __str__(self):
         return str(self.object) + "." + str(self.member)
 

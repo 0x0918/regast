@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
@@ -38,6 +38,10 @@ class ForStatement(Statement):
     @property
     def iteration(self) -> Optional[Expression]:
         return self._iteration
+
+    @property
+    def children(self) -> List:
+        return [self.body] + [x for x in [self.initialization, self.condition, self.iteration] if x]
 
     def __eq__(self, other):
         if isinstance(other, ForStatement):

@@ -42,6 +42,13 @@ class CallExpression(Expression):
         if self.struct_arguments and "salt" in self.struct_arguments.fields:
             return self.struct_arguments.get_argument_by_field("salt")
 
+    @property
+    def children(self) -> List:
+        children = [self.called] + self.arguments
+        if self.struct_arguments:
+            children.append(self.struct_arguments)
+        return children
+
     def __str__(self):
         s = str(self.called)
         if self.struct_arguments:

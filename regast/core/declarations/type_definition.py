@@ -1,3 +1,4 @@
+from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 from regast.core.types.type import Type
@@ -20,6 +21,10 @@ class TypeDefinition(Core):
     @property
     def type(self) -> Type:
         return self._type
+
+    @property
+    def children(self) -> List:
+        return [self.alias, self.type]
 
     def __eq__(self, other):
         if isinstance(other, TypeDefinition):

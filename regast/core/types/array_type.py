@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 from regast.core.types.type import Type
 from regast.core.expressions.expression import Expression
@@ -33,6 +33,12 @@ class ArrayType(Type):
     @property
     def storage_size(self) -> Tuple[int, bool]:
         return 32, True
+
+    @property
+    def children(self) -> List:
+        if self.length:
+            return [self.type, self.length]
+        return self.type
 
     def __str__(self):
         if self.length:

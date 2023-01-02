@@ -29,6 +29,10 @@ class UsingDirective(Core):
     def is_global(self) -> bool:
         return self._global
 
+    @property
+    def children(self) -> List:
+        return [self.type] + self.libraries
+
     def __eq__(self, other):
         if isinstance(other, UsingDirective):
             return self.libraries == other.libraries and self.type == other.type and self.is_global == other.is_global
