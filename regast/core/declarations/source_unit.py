@@ -15,6 +15,7 @@ from regast.core.variables.constant import Constant
 class SourceUnit(Core):
     def __init__(
         self,
+        fname: str,
         pragma_directives: List[Pragma] = [],
         import_directives: List[Import] = [],
         contracts: List[Contract] = [],
@@ -28,6 +29,8 @@ class SourceUnit(Core):
     ):
         super().__init__()
 
+        self._fname: str = fname
+
         self._pragma_directives: List[Pragma] = pragma_directives
         self._import_directives: List[Import] = import_directives
         self._using_directives: List[UsingDirective] = using_directives
@@ -38,6 +41,10 @@ class SourceUnit(Core):
         self._constants: List[Constant] = constants
         self._custom_errors: List[CustomError] = custom_errors
         self._type_definitions: List[TypeDefinition ] = type_definitions
+
+    @property
+    def fname(self) -> str:
+        return self._fname
 
     @property
     def pragma_directives(self) -> List[Pragma]:

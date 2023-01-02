@@ -1,7 +1,10 @@
 import argparse
-import os
 import glob
-from typing import Dict, List, Tuple
+import os
+from typing import Dict, List
+
+from regast.parsing.parser_type import ParserType
+
 
 def parse_argument_contract(contract_path: str) -> List[str]:
     if not os.path.exists(contract_path):
@@ -57,25 +60,51 @@ def parse_argument_remap(remappings_fname: str) -> Dict[str, str]:
             remappings[identifier] = path
 
         return remappings
-        
-def handle_arguments() -> Tuple[List[str], List[str], Dict[str, str]]:
+
+def parse_argument_parser(parser_type_str: str) -> ParserType:
+    if not parser_type_str:
+        return ParserType.TREE_SITTER
+
+    if parser_type_str not in [x.value for x in ParserType]:
+        raise Exception(f'--parser: {parser_type_str} is not a valid parser')
+    
+    return ParserType(parser_type_str)
+
+def handle_arguments():
     parser = argparse.ArgumentParser(description='Scan for vulnerabilities based on regex or AST queries.')
-    parser.add_argument('contract', metavar='<contract>', type=str,
-                        help='Soldiity file or folder to scan')
-    parser.add_argument('--scope', metavar='<scope.txt>', type=str,
-                        help='Text file containing a list of contracts in scope')
-    parser.add_argument('--remap', metavar='<remappings.txt>', type=str,
-                        help='Text file containing import remappings')
+    parser.add_argument(
+        'contract', 
+        metavar='<contract>', 
+        type=str,
+        help='Soldiity file or folder to scan'
+    )
+    parser.add_argument(
+        '--scope', 
+        metavar='<scope.txt>', 
+        type=str,
+        help='Text file containing a list of contracts in scope'
+    )
+    parser.add_argument(
+        '--remap', 
+        metavar='<remappings.txt>', 
+        type=str,
+        help='Text file containing import remappings'
+    )
+    parser.add_argument(
+        '--parser', 
+        metavar='<' + ', '.join([x.value for x in ParserType]) + '>', 
+        type=str,
+        help='Specifies the parser to use'
+    )
 
     args = parser.parse_args()
-    contract_fnames = parse_argument_contract(args.contract)
+    args.contract = parse_argument_contract(args.contract)
+    args.parser = parse_argument_parser(args.parser)
 
-    files_in_scope = None
     if args.scope is not None:
-        files_in_scope = parse_argument_scope(contract_fnames, args.scope)
+        args.scope = parse_argument_scope(args.contract, args.scope)
         
-    remappings = None
     if args.remap is not None:
-        remappings = parse_argument_remap(args.remap)
+        args.scope = parse_argument_remap(args.remap)
 
-    return contract_fnames, files_in_scope, remappings
+    return args

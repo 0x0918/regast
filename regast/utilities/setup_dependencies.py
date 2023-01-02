@@ -1,9 +1,8 @@
 import os
-import sys
 import subprocess
 from tree_sitter import Language
 
-from regast.utilities.definitions import ROOT_DIR
+from regast.utilities.definitions import ROOT_DIR, TREE_SITTER_SOLIDITY_LIBRARY_PATH
 
 def setup_antlr4():
     solidity_grammar_path = os.path.join(ROOT_DIR, 'third_party', 'antlr', 'Solidity.g4')
@@ -13,15 +12,11 @@ def setup_antlr4():
         subprocess.run(['antlr4', '-Dlanguage=Python3', solidity_grammar_path, '-o', output_directory, '-visitor'])
 
 def setup_treesitter():
-    global SOLIDITY_LANGUAGE
-
-    if sys.platform == "win32":
-        library_name = "solidity.dll"
-    else:
-        library_name = "solidity.so"
-
-    library_path = os.path.join(ROOT_DIR, 'build', library_name)
     tree_sitter_solidity_path = os.path.join(ROOT_DIR, 'third_party', 'tree-sitter-solidity')
+    
+    if not os.path.exists(TREE_SITTER_SOLIDITY_LIBRARY_PATH):
+        Language.build_library(TREE_SITTER_SOLIDITY_LIBRARY_PATH, [tree_sitter_solidity_path])
 
-    Language.build_library(library_path, tree_sitter_solidity_path)
-    SOLIDITY_LANGUAGE = Language(library_path, 'solidity')
+def initialize_dependencices():
+    # setup_antlr4()
+    setup_treesitter()

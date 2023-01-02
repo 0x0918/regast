@@ -27,7 +27,6 @@ class StructArguments(Expression):
     def get_argument_by_field(self, field: Union[Identifier, str]) -> Optional[Expression]:
         if field in self.fields:
             return self.arguments[self.fields.index(field)]
-        return None
 
     def __str__(self):
         return "{" + ", ".join([str(self.fields[i]) + ": " + str(self.arguments[i]) for i in range(len(self.fields))]) + "}"
