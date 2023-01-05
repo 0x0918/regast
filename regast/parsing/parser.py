@@ -1,35 +1,28 @@
-from typing import Dict
+import tree_sitter as ts
 
-from regast.core.declarations.source_unit import SourceUnit
+from regast.exceptions import ParsingException
+from regast.parsing.declarations import TreeSitterDeclarations
+from regast.utilities.definitions import TREE_SITTER_SOLIDITY_LIBRARY_PATH
+
 
 class Parser:
-    """
-    Parsers should inherit this class and implement the parse_source_file() function,
-    which takes in a source file (fname) and does the following:
-    - Parses it into a SourceUnit
-    - Adds it to self.fname_to_source_unit[fname]
-
-    See tree_sitter_parser.py for reference
-    """
     def __init__(self):
-        self.fname_to_source_unit: Dict[str, SourceUnit] = {}
-    
-    """
-    Move the following to base detector?
+        super().__init__()
 
-    @property
-    def fnames(self) -> List[str]:
-        return list(self.fname_to_source_unit.keys())
+        # Initialize parser
+        solidity_language = ts.Language(TREE_SITTER_SOLIDITY_LIBRARY_PATH, 'solidity')
+        parser = ts.Parser()
+        parser.set_language(solidity_language)
 
-    @property
-    def source_units(self) -> List[SourceUnit]:
-        return list(self.fname_to_source_unit.values())
-
-    @property
-    def get_source_unit_by_fname(self, fname: str) -> Optional[SourceUnit]:
-        if fname in self.fname_to_source_unit:
-            return self.fname_to_source_unit[fname]
-    """
+        self.parser = parser
 
     def parse_source_file(self, fname: str):
-        raise NotImplementedError(f"parse_file() not implemented for {self.__class__.__name__}")
+        with open(fname, 'rb') as f:
+            data = f.read()
+
+        try:
+            tree_sitter_tree = self.parser.parse(data)
+        except Exception as e:
+            raise ParsingException(f"Failed to parse {fname}, throws: {e}")
+
+        self.fname_to_source_unit[fname] = TreeSitterDeclarations.parse_source_unit(tree_sitter_tree)

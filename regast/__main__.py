@@ -6,7 +6,6 @@ from typing import Dict, List
 from regast.detectors import all_detectors
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
-from regast.parsing.parser_type import ParserType
 from regast.regast import Regast
 from regast.utilities.command_line import handle_arguments
 from regast.utilities.output import output_to_stdout
@@ -20,10 +19,9 @@ def get_results_from_ast(
     source_fnames: List[str], 
     files_in_scope: List[str],
     remaps: Dict[str, str],
-    parser_type: ParserType, 
 ) -> Dict[DetectorClassification, Dict[Detector, List[Result]]]:
     # Initialize regast class, which parses ast
-    regast = Regast(source_fnames, files_in_scope, remaps, parser_type)
+    regast = Regast(source_fnames, files_in_scope, remaps)
 
     # Run detectors and filter results
     for detector in get_detectors():
@@ -37,7 +35,7 @@ def main():
     args = handle_arguments()
 
     # Run detectors
-    results = get_results_from_ast(args.contract, args.scope, args.remap, args.parser)
+    results = get_results_from_ast(args.contract, args.scope, args.remap)
 
     # Output results to stdout
     output_to_stdout(results)

@@ -15,6 +15,27 @@ class Core:
 
     def get_instances_of(self, *core_types: List[Union[str, type]]) -> Union[List, List[List]]:
         """
+        TODO
+        We can optimize this further by introducing memoization. The function below allows us to get the
+        parent classes of an object, which we can then store in a Dict[type, List[object]]. When
+        get_instances_of() is called for the first time, we iterate through all children and create this dict.
+        Future calls will then just reference this dict.
+
+        This method will return nested types, such as an expression in an expression, is this a pro/con?
+
+        Pros:
+        - O(1) for subsequent runs
+
+        Cons:
+        - Uses a lot of memory, each core object will have to store its own dict. Unless we find a way to store only
+          one copy of this dict and all objects to reference that one dict.
+        - Will be initially slower for shallow calls, such as querying for statements in a function.
+
+        def unwrap_classes(c): # where c is a type, such as LocalVariable
+            return [c.__name__] + unwrap_classes(c.__bases__[0]) if c != Core else []
+        """
+
+        """
         Returns all child instances of core types specified
         - Each core type can either be a class or str (LocalVariable, "LocalVariable")
         - If only 1 core type is provided, returns a single list

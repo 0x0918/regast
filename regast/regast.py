@@ -3,7 +3,6 @@ from typing import Dict, List
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 from regast.parsing.parser import Parser
-from regast.parsing.parser_type import ParserType
 
 class Regast:
     def __init__(
@@ -11,14 +10,13 @@ class Regast:
         fnames: List[str], 
         files_in_scope: List[str],
         remaps: Dict[str, str],
-        parser_type: ParserType, 
     ):
         self.fnames: List[str] = fnames
         self.files_in_scope: List[str] = files_in_scope
 
         self._detectors: List[Detector] = []
 
-        self.parser: Parser = ParserType.get_parser_from_type(parser_type)
+        self.parser = Parser()
         for fname in self.fnames:
             self.parser.parse_source_file(fname)
         

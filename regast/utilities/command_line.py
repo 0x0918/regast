@@ -61,15 +61,6 @@ def parse_argument_remap(remappings_fname: str) -> Dict[str, str]:
 
         return remappings
 
-def parse_argument_parser(parser_type_str: str) -> ParserType:
-    if not parser_type_str:
-        return ParserType.TREE_SITTER
-
-    if parser_type_str not in [x.value for x in ParserType]:
-        raise Exception(f'--parser: {parser_type_str} is not a valid parser')
-    
-    return ParserType(parser_type_str)
-
 def handle_arguments():
     parser = argparse.ArgumentParser(description='Scan for vulnerabilities based on regex or AST queries.')
     parser.add_argument(
@@ -90,16 +81,9 @@ def handle_arguments():
         type=str,
         help='Text file containing import remappings'
     )
-    parser.add_argument(
-        '--parser', 
-        metavar='<' + ', '.join([x.value for x in ParserType]) + '>', 
-        type=str,
-        help='Specifies the parser to use'
-    )
 
     args = parser.parse_args()
     args.contract = parse_argument_contract(args.contract)
-    args.parser = parse_argument_parser(args.parser)
 
     if args.scope is not None:
         args.scope = parse_argument_scope(args.contract, args.scope)
