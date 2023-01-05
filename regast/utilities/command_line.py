@@ -3,8 +3,6 @@ import glob
 import os
 from typing import Dict, List
 
-from regast.parsing.parser_type import ParserType
-
 
 def parse_argument_contract(contract_path: str) -> List[str]:
     if not os.path.exists(contract_path):

@@ -2,8 +2,8 @@ from typing import List, Union
 
 
 class Core:
-    def __init__(self):
-        self._tree_sitter_node = None 
+    def __init__(self, node):
+        self._tree_sitter_node = node 
 
     @property
     def tree_sitter_node(self):

@@ -18,7 +18,7 @@ class Regast:
 
         self.parser = Parser()
         for fname in self.fnames:
-            self.parser.parse_source_file(fname)
+            self.parser.parse(fname)
         
     def register_detector(self, detector_class: Detector):
         instance = detector_class(self)
