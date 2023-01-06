@@ -1,9 +1,11 @@
 from typing import Dict
 import tree_sitter as ts
+from regast.core.declarations.comment import Comment
 
 from regast.core.declarations.source_unit import SourceUnit
 from regast.exceptions import ParsingException
 from regast.parsing.declarations import DeclarationParser
+from regast.parsing.tree_sitter_node import TreeSitterNode
 from regast.utilities.definitions import TREE_SITTER_SOLIDITY_LIBRARY_PATH
 
 
@@ -20,6 +22,19 @@ class Parser:
 
         self.parser = parser
 
+    @staticmethod
+    def convert_to_tree_sitter_node(node):
+        tree_sitter_node = TreeSitterNode(node)
+        for child_node in node.children:
+            if child_node.type == 'comment':
+                tree_sitter_node._comments.append(Comment(child_node))
+            else:
+                child_tree_sitter_node = Parser.convert_to_tree_sitter_node(child_node)
+                tree_sitter_node._children.append(child_tree_sitter_node)
+                tree_sitter_node._comments.extend(child_tree_sitter_node.comments)
+
+        return tree_sitter_node
+
     def parse(self, fname: str):
         with open(fname, 'rb') as f:
             data = f.read()
@@ -29,7 +44,5 @@ class Parser:
         except Exception as e:
             raise ParsingException(f"Failed to parse {fname}, throws: {e}")
 
-        self.fname_to_source_unit[fname] = DeclarationParser.parse_source_unit(
-            fname, 
-            tree_sitter_tree.root_node
-        )
+        root_node = Parser.convert_to_tree_sitter_node(tree_sitter_tree.root_node)
+        self.fname_to_source_unit[fname] = DeclarationParser.parse_source_unit(root_node, fname)

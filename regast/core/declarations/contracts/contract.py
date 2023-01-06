@@ -17,20 +17,16 @@ from regast.core.expressions.identifier import Identifier
 from regast.core.expressions.struct_expression import StructArguments
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.state_variable import StateVariable
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 
 class InheritanceSpecifier(Core):
-    def __init__(
-        self, 
-        name: UserDefinedType,
-        struct_arguments: Optional[StructArguments] = None,
-        arguments: List[Expression] = [],
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: UserDefinedType = name
-        self._struct_arguments: Optional[StructArguments] = struct_arguments
-        self._arguments: List[Expression] = arguments
+        self._name: UserDefinedType = None
+        self._struct_arguments: Optional[StructArguments] = None
+        self._arguments: List[Expression] = []
 
     @property
     def name(self) -> str:
@@ -62,45 +58,26 @@ class InheritanceSpecifier(Core):
         return False
 
 class Contract(Core):
-    def __init__(
-        self,
-        name: Identifier,
-        inheritance_specifiers: List[InheritanceSpecifier] = [],
-        abstract: bool = False,
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
         
-        constructor: Optional[Constructor] = None,
-        fallback_function: Optional[FallbackFunction] = None,
-        receive_function: Optional[ReceiveFunction] = None,
-        functions: List[Function] = [],
-        modifiers: List[Modifier] = [],
+        self._name: Identifier = None
+        self._abstract: bool = False
+        self._inheritance_specifiers: List[InheritanceSpecifier] = []
 
-        structs: List[Struct] = [],
-        enums: List[Enum] = [],
-        type_definitions: List[TypeDefinition] = [],
-        state_variables: List[StateVariable] = [],
-        events: List[Event] = [],
-        custom_errors: List[CustomError] = [],
-        using_directives: List[UsingDirective] = [],
-    ):
-        super().__init__()
-        
-        self._name: Identifier = name
-        self._inheritance_specifiers: List[InheritanceSpecifier] = inheritance_specifiers
-        self._abstract: bool = abstract
+        self._constructor: Optional[Constructor] = None
+        self._fallback_function: Optional[FallbackFunction] = None
+        self._receive_function: Optional[ReceiveFunction] = None
+        self._functions: List[Function] = []
+        self._modifiers: List[Modifier] = []
 
-        self._constructor: Optional[Constructor] = constructor
-        self._fallback_function: Optional[FallbackFunction] = fallback_function
-        self._receive_function: Optional[ReceiveFunction] = receive_function
-        self._functions: List[Function] = functions
-        self._modifiers: List[Modifier] = modifiers
-
-        self._structs: List[Struct] = structs
-        self._enums: List[Enum] = enums
-        self._type_definitions: List[TypeDefinition] = type_definitions
-        self._state_variables: List[StateVariable] = state_variables
-        self._events: List[Event] = events
-        self._custom_errors: List[CustomError] = custom_errors
-        self._using_directives: List[UsingDirective] = using_directives
+        self._structs: List[Struct] = []
+        self._enums: List[Enum] = []
+        self._type_definitions: List[TypeDefinition] = []
+        self._state_variables: List[StateVariable] = []
+        self._events: List[Event] = []
+        self._custom_errors: List[CustomError] = []
+        self._using_directives: List[UsingDirective] = []
 
     @property
     def name(self) -> Identifier:

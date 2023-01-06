@@ -12,9 +12,10 @@ from regast.core.declarations.directives.pragma_directive import Pragma
 from regast.core.declarations.struct import Struct
 from regast.core.declarations.type_definition import TypeDefinition
 from regast.core.variables.constant import Constant
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class SourceUnit(Core):
-    def __init__(self, node, fname: str):
+    def __init__(self, node: TreeSitterNode, fname: str):
         super().__init__(node)
 
         self._fname: str = fname
@@ -29,7 +30,6 @@ class SourceUnit(Core):
         self._constants: List[Constant] = []
         self._custom_errors: List[CustomError] = []
         self._type_definitions: List[TypeDefinition ] = []
-        self._comments: List[Comment] = []
 
     @property
     def fname(self) -> str:
@@ -77,7 +77,7 @@ class SourceUnit(Core):
 
     @property
     def comments(self) -> List[Comment]:
-        return list(self._comments)
+        return self.tree_sitter_node.comments
 
     @property
     def children(self) -> List:
