@@ -25,14 +25,15 @@ class Parser:
     @staticmethod
     def convert_to_tree_sitter_node(node):
         tree_sitter_node = TreeSitterNode(node)
-        for child_node in node.children:
+        for i in range(len(node.children)):
+            child_node = node.children[i]
             if child_node.type == 'comment':
                 tree_sitter_node._comments.append(Comment(child_node))
             else:
-                child_tree_sitter_node = Parser.convert_to_tree_sitter_node(child_node)
-                tree_sitter_node._children.append(child_tree_sitter_node)
-                tree_sitter_node._comments.extend(child_tree_sitter_node.comments)
-
+                child = Parser.convert_to_tree_sitter_node(child_node)
+                tree_sitter_node.add_child(child)
+                tree_sitter_node.extend_comments(child.comments)
+                
         return tree_sitter_node
 
     def parse(self, fname: str):

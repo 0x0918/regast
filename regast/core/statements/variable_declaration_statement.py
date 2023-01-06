@@ -134,6 +134,3 @@ class VariableDeclarationWithVarStatement(Statement):
         if isinstance(other, VariableDeclarationWithVarStatement):
             return self.names == other.names and self.initial_expression == other.initial_expression
         return False
-
-# TODO Need to account for the overlap in .children of this and localvariable
-# Idea: Implement __hash__ in core, then do list(set(children))

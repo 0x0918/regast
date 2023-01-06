@@ -1,11 +1,14 @@
 from regast.core.declarations.comment import Comment
-from regast.core.declarations.contracts.contract import Contract
+from regast.core.declarations.contracts.contract import Contract, InheritanceSpecifier
+from regast.core.declarations.contracts.interface import Interface
+from regast.core.declarations.contracts.library import Library
 from regast.core.declarations.functions.fallback_function import FallbackFunction
 from regast.core.declarations.functions.receive_function import ReceiveFunction
 from regast.core.declarations.source_unit import SourceUnit
 from regast.exceptions import ParsingException
 from regast.parsing.expressions import ExpressionParser
 from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.types import TypeParser
 from regast.parsing.variables import VariableParser
 
 
@@ -26,18 +29,16 @@ class DeclarationParser:
                 source_unit._import_directives.append(import_directive)
 
             # Contracts
-            elif child_node.type == 'contract_declaration':
-                contract = DeclarationParser.parse_contract_declaration(child_node)
-                source_unit._contracts.append(contract)
+            elif child_node.type in ['contract_declaration', 'interface_declaration', 'library_declaration']:
+                contract = DeclarationParser.parse_contract_interface_library_declaration(child_node)
+                if isinstance(contract, Contract):
+                    source_unit._contracts.append(contract)
+                elif isinstance(contract, Interface):
+                    source_unit._interfaces.append(contract)
+                else:
+                    assert isinstance(contract, Library)
+                    source_unit._libraries.append(contract)
                 
-            elif child_node.type == 'interface_declaration': 
-                interface = DeclarationParser.parse_interface_declaration(child_node)
-                source_unit._contracts.append(interface)
-                
-            elif child_node.type == 'library_declaration':
-                library = DeclarationParser.parse_library_declaration(child_node)
-                source_unit._contracts.append(library)
-            
             # Declarations
             elif child_node.type == 'error_declaration':
                 custom_error = DeclarationParser.parse_error_declaration(child_node)
@@ -70,15 +71,41 @@ class DeclarationParser:
 
     # CONTRACTS
     @staticmethod
-    def parse_contract_declaration(node: TreeSitterNode):
-        assert node.type == 'contract_declaration'
+    def parse_contract_interface_library_declaration(node: TreeSitterNode):
+        assert node.type in ['contract_declaration', 'interface_declaration', 'library_declaration']
 
-        contract = Contract(node)
+        contract = None
+        if node.type == 'contract_declaration':
+            contract = Contract(node)
+        elif node.type == 'interface_declaration':
+            contract = Interface(node)
+        elif node.type == 'library_declaration':
+            contract = Library(node)
 
         def parse_inheritance_specifier(node: TreeSitterNode):
             assert node.type == 'inheritance_specifier'
 
-            print(dir(node.children[0]._underlying_node))
+            ancestor, *ancestor_arguments = node.children
+            call_arguments = []
+            if ancestor_arguments:
+                for child_node in ancestor_arguments:
+                    if child_node.type == 'call_argument':
+                        call_arguments.append(child_node)
+                    elif child_node.type not in ['(', ')', ',']:
+                        raise ParsingException(f'Unknown tree-sitter node type for _call_arguments: {child_node.type}')
+            
+            inheritance_specifier = InheritanceSpecifier(node)
+            inheritance_specifier._name = TypeParser.parse_user_defined_type(ancestor)
+            for call_argument in call_arguments:
+                if len(call_argument.children) == 1:
+                    expression = ExpressionParser.parse_expression(call_argument)
+                    inheritance_specifier.arguments.append(expression)
+                else:
+                    assert len(call_arguments) == 1
+                    struct_arguments = ExpressionParser.parse_struct_arguments(call_argument)
+                    inheritance_specifier._struct_arguments = struct_arguments
+
+            contract._inheritance_specifiers.append(inheritance_specifier)
 
         def parse_contract_body(node: TreeSitterNode):
             assert node.type == 'contract_body'
@@ -129,7 +156,9 @@ class DeclarationParser:
                         assert not contract.receive_function
                         contract._receive_function = f
                     else:
-                        raise ParsingException(f'Unknown fallback_receive_definition: {child_node}')
+                        # TODO Implement fallback_receive_definition and uncomment this exception
+                        pass
+                        # raise ParsingException(f'Unknown fallback_receive_definition: {child_node}')
                         
                 elif child_node.type == 'user_defined_type_definition':
                     type_definition = DeclarationParser.parse_user_defined_type_definition(child_node)
@@ -151,21 +180,17 @@ class DeclarationParser:
             elif child_node.type == 'contract_body':
                 parse_contract_body(child_node)
 
-            elif child_node.type not in ['contract', 'is', ',']:
+            elif child_node.type not in ['contract', 'interface', 'library', 'is', ',']:
                 raise ParsingException(f'Unknown tree-sitter node for contract_declaration: {child_node.type}')
 
-    @staticmethod
-    def parse_interface_declaration(node):
-        pass
-
-    @staticmethod
-    def parse_library_declaration(node):
-        pass
+        return contract
 
     # DIRECTIVES
     @staticmethod
     def parse_import_directive(node):
-        pass
+        assert node.type == 'import_directive'
+
+        # TODO Stopped here
 
     @staticmethod
     def parse_pragma_directive(node):

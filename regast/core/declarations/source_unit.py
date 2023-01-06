@@ -3,6 +3,8 @@ from typing import List
 from regast.core.core import Core
 from regast.core.declarations.comment import Comment
 from regast.core.declarations.contracts.contract import Contract
+from regast.core.declarations.contracts.interface import Interface
+from regast.core.declarations.contracts.library import Library
 from regast.core.declarations.custom_error import CustomError
 from regast.core.declarations.directives.using_directive import UsingDirective
 from regast.core.declarations.enum import Enum
@@ -23,7 +25,11 @@ class SourceUnit(Core):
         self._pragma_directives: List[Pragma] = []
         self._import_directives: List[Import] = []
         self._using_directives: List[UsingDirective] = []
+        
         self._contracts: List[Contract] = []
+        self._interfaces: List[Interface] = []
+        self._libraries: List[Library] = []
+        
         self._enums: List[Enum] = []
         self._structs: List[Struct] = []
         self._functions: List[Function] = []
@@ -50,6 +56,21 @@ class SourceUnit(Core):
     @property
     def contracts(self) -> List[Contract]:
         return list(self._contracts)
+        
+    @property
+    def interfaces(self) -> List[Interface]:
+        return list(self._interfaces)
+        
+    @property
+    def libraries(self) -> List[Library]:
+        return list(self._libraries)
+    
+    @property
+    def all_contracts(self) -> List[Contract]:
+        """
+        All contracts, inclusive of interfaces and libraries
+        """
+        return self.contracts + self.interfaces + self.libraries
 
     @property
     def enums(self) -> List[Enum]:

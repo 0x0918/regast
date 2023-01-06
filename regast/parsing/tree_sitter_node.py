@@ -1,11 +1,18 @@
-from typing import List
+from typing import Dict, List, Optional
+
+from regast.core.declarations.comment import Comment
 
 
 class TreeSitterNode:
     def __init__(self, node):
         self._underlying_node = node
-        self._children = []
-        self._comments = []
+
+        self._children: List["TreeSitterNode"] = []
+        self._comments: List[Comment] = []
+        
+    @property
+    def underlying_node(self):
+        return self._underlying_node
 
     @property
     def type(self) -> str:
@@ -16,17 +23,15 @@ class TreeSitterNode:
         return self._underlying_node.text.decode()
 
     @property
-    def children(self) -> List:
+    def children(self) -> List["TreeSitterNode"]:
         return list(self._children)
 
     @property
-    def field(self, field_name: str):
-        """
-        TODO
-        Implement child_by_field_name, renamed to field
-        """
-        pass
-
-    @property
-    def comments(self) -> List:
+    def comments(self) -> List[Comment]:
         return list(self._comments)
+
+    def add_child(self, child: "TreeSitterNode"):
+        self._children.append(child)
+
+    def extend_comments(self, comments: List[Comment]):
+        self._comments.extend(comments)

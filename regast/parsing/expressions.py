@@ -4,6 +4,10 @@ No conditional expression
 
 class ExpressionParser:
     @staticmethod
+    def parse_expression(node):
+        pass
+    
+    @staticmethod
     def parse_binary_expression(node):
         pass
 
@@ -25,6 +29,10 @@ class ExpressionParser:
 
     @staticmethod
     def parse_meta_type_expression(node):
+        pass
+
+    @staticmethod
+    def parse_struct_arguments(node):
         pass
 
     @staticmethod
