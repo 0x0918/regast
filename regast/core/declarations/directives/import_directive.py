@@ -2,21 +2,16 @@ from typing import List, Dict, Optional, Union
 
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class Import(Core):
-    def __init__(
-        self,
-        import_path: str,
-        imported: List[Identifier],
-        alias: Optional[Identifier] = None,
-        renaming: Dict[Identifier, Identifier] = {},
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._import_path: str = import_path
-        self._imported: List[Identifier] = imported
-        self._alias: Optional[Identifier] = alias
-        self._renaming: Dict[Identifier, Identifier] = renaming
+        self._import_path: str = None
+        self._alias: Optional[Identifier] = None
+        self._imported: List[Identifier] = []
+        self._renaming: Dict[Identifier, Identifier] = {}
 
     @property
     def import_path(self) -> str:

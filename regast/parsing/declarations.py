@@ -2,6 +2,7 @@ from regast.core.declarations.comment import Comment
 from regast.core.declarations.contracts.contract import Contract, InheritanceSpecifier
 from regast.core.declarations.contracts.interface import Interface
 from regast.core.declarations.contracts.library import Library
+from regast.core.declarations.directives.import_directive import Import
 from regast.core.declarations.functions.fallback_function import FallbackFunction
 from regast.core.declarations.functions.receive_function import ReceiveFunction
 from regast.core.declarations.source_unit import SourceUnit
@@ -190,7 +191,66 @@ class DeclarationParser:
     def parse_import_directive(node):
         assert node.type == 'import_directive'
 
-        # TODO Stopped here
+        import_directive = Import(node)
+        if node.children[-2].type == 'from':
+            _, *import_clause, _, source = node.children
+
+            assert source.type == 'string'
+            import_directive._import_path = source.text
+
+            if import_clause[0].type == '{':
+                # import {<import_name> as <alias>, <import_name> as <alias>} from <source>
+                _, *import_declarations, _ = import_clause
+                i = 0
+                while i < len(import_declarations):
+                    import_name = import_declarations[i]
+                    assert import_name.type == 'identifier'
+
+                    import_identifier = ExpressionParser.parse_identifier(import_name)
+                    import_directive._imported.append(import_identifier)
+
+                    if import_declarations[i+1].type == 'as':
+                        alias = import_declarations[i+2]
+                        assert alias.type == 'identifier'
+
+                        alias_identifier = ExpressionParser.parse_identifier(alias)
+                        import_directive._renaming[import_identifier] = alias_identifier
+
+                        i += 4
+                    else:
+                        i += 1
+
+            else:
+                # import <import_name> as <alias> from <source>
+                import_name, *import_alias = import_clause
+                assert import_name.type in ['*', 'identifier']
+
+                import_identifier = ExpressionParser.parse_identifier(import_name)
+                import_directive._imported.append(import_identifier)
+
+                if import_alias:
+                    _, alias = import_alias
+                    assert alias.type == 'identifier'
+
+                    alias_identifier = ExpressionParser.parse_identifier(alias)
+                    import_directive._renaming[import_identifier] = alias_identifier
+
+        else:
+            # import <source> as <alias>
+            _, *source_import = node.children
+            source, *import_alias = source_import
+
+            assert source.type == 'string'
+            import_directive._import_path = source.text
+
+            if import_alias:
+                _, alias = import_alias
+                assert alias.type == 'identifier'
+
+                import_directive._alias = alias.text
+
+        return import_directive
+
 
     @staticmethod
     def parse_pragma_directive(node):
