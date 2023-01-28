@@ -2,17 +2,14 @@ from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 from regast.core.types.type import Type
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class TypeDefinition(Core):
-    def __init__(
-        self,
-        alias: Identifier,
-        type: Type
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._alias: Identifier = alias
-        self._type: Type = type
+        self._alias: Identifier = None
+        self._type: Type = None
 
     @property
     def alias(self) -> Identifier:

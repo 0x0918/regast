@@ -3,19 +3,15 @@ from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 from regast.core.variables.event_parameter import EventParameter
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class Event(Core):
-    def __init__(
-        self,
-        name: Identifier,
-        parameters: List[EventParameter] = [],
-        anonymous: bool = False
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: Identifier = name
-        self._parameters: List[EventParameter] = parameters
-        self._anonymous: bool = anonymous
+        self._name: Identifier = None
+        self._parameters: List[EventParameter] = []
+        self._anonymous: bool = False
 
     @property
     def name(self) -> Identifier:

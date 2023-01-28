@@ -8,6 +8,7 @@ from regast.core.declarations.directives.import_directive import Import
 from regast.core.declarations.directives.pragma_directive import Pragma
 from regast.core.declarations.directives.using_directive import UsingDirective
 from regast.core.declarations.enum import Enum
+from regast.core.declarations.event import Event
 from regast.core.declarations.functions.constructor import Constructor
 from regast.core.declarations.functions.fallback_function import FallbackFunction
 from regast.core.declarations.functions.function import Function, ModifierInvocation
@@ -15,6 +16,7 @@ from regast.core.declarations.functions.modifier import Modifier
 from regast.core.declarations.functions.receive_function import ReceiveFunction
 from regast.core.declarations.source_unit import SourceUnit
 from regast.core.declarations.struct import Struct
+from regast.core.declarations.type_definition import TypeDefinition
 from regast.exceptions import ParsingException
 from regast.parsing.expressions import ExpressionParser
 from regast.parsing.helpers import extract_call_arguments
@@ -512,8 +514,45 @@ class DeclarationParser:
 
     @staticmethod
     def parse_event_definition(node):
-        pass
+        assert node.type == 'event_definition'
+
+        event = Event(node)
+
+        name, event_parameters = None, []
+        match [x.type for x in node.children]:
+            case ['event', 'identifier', '(', *_, ')', 'anonymous']:
+                _, name, *event_parameters, _ = node.children 
+                event._anonymous = True
+            case ['event', 'identifier', '(', *_, ')']:
+                _, name, *event_parameters = node.children
+            case _:
+                raise ParsingException(f'Unable to parse event_definition: {node.text}')
+            
+        event._name = ExpressionParser.parse_identifier(name)
+
+        for child_node in event_parameters:
+            match child_node.type:
+                case 'event_paramater':
+                    event_parameter = VariableParser.parse_event_parameter(child_node)
+                    event._parameters.append(event_parameter)
+                case '(' | ')' | ',':
+                    pass
+                case other:
+                    raise ParsingException(f'Unknown tree-sitter node type in event_definition: {other}')
+
+        return event
 
     @staticmethod
     def parse_user_defined_type_definition(node):
-        pass
+        assert node.type == 'user_defined_type_definition'
+
+        type_token, name, is_token, primitive_type = node.children
+        assert type_token.type == 'type' and is_token.type == 'is'
+        assert name.type == 'identifier'
+        assert primitive_type.type == 'primitive_type'
+
+        type_definition = TypeDefinition(node)
+        type_definition._type = TypeParser.parse_primitive_type(primitive_type)
+        type_definition._alias = ExpressionParser.parse_identifier(name)
+
+        return type_definition
