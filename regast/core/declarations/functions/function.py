@@ -5,7 +5,6 @@ from regast.core.declarations.functions.function_body import FunctionBody
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.identifier import Identifier
 from regast.core.expressions.struct_expression import StructArguments
-from regast.core.statements.block import Block
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.parameter import Parameter
 from regast.core.common import Visibility, StateMutability
@@ -15,13 +14,13 @@ class ModifierInvocation(Core):
     def __init__(self, node: TreeSitterNode):
         super().__init__(node)
 
-        self._name: UserDefinedType = None
-        self._struct_arguments: Optional[StructArguments] = None
+        self._identifiers: List[Identifier] = []
         self._arguments: List[Expression] = []
+        self._struct_arguments: Optional[StructArguments] = None
 
     @property
     def name(self) -> str:
-        return ".".join([str(x) for x in self.identifiers])
+        return ".".join([str(x) for x in self._identifiers])
 
     @property
     def struct_arguments(self) -> Optional[StructArguments]:
@@ -61,6 +60,7 @@ class Function(FunctionBody):
         self._mutability: Optional[StateMutability] = None
 
         self._virtual: bool = False
+        self._override: bool = False
         self._overrides: List[UserDefinedType] = []
 
     @property
@@ -107,6 +107,10 @@ class Function(FunctionBody):
         return self._virtual
 
     @property
+    def is_override(self) -> bool:
+        return self._override
+
+    @property
     def overrides(self) -> List[UserDefinedType]:
         return list(self._overrides)
 
@@ -128,6 +132,7 @@ class Function(FunctionBody):
                 self.visibility == other.visibility and
                 self.mutability == other.mutability and
                 self.is_virtual == other.is_virtual and 
+                self.is_override == other.is_override and 
                 self.overrides == other.overrides
             )
         return False

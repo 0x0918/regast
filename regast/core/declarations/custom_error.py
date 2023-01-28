@@ -3,17 +3,14 @@ from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 from regast.core.variables.error_parameter import ErrorParameter
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class CustomError(Core):
-    def __init__(
-        self,
-        name: Identifier,
-        parameters: List[ErrorParameter] = []
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: Identifier = name
-        self._parameters: List[ErrorParameter] = parameters
+        self._name: Identifier = None
+        self._parameters: List[ErrorParameter] = []
 
     @property
     def name(self) -> Identifier:

@@ -2,11 +2,33 @@
 No conditional expression
 """
 
+from typing import Union
+from regast.core.expressions.expression import Expression
+from regast.core.expressions.struct_expression import StructArguments
+from regast.exceptions import ParsingException
+
+
 class ExpressionParser:
     @staticmethod
     def parse_expression(node):
         pass
-    
+
+    @staticmethod
+    def parse_call_argument(node) -> Union[Expression, StructArguments]:
+        assert node.type == 'call_argument'
+
+        match [x.type for x in node.children]:
+            # expression (normal argument)
+            case [expression_node]:
+                return ExpressionParser.parse_expression(expression_node)
+
+            # struct arguments
+            case ['{', *_, '}']:
+                return ExpressionParser.parse_struct_arguments(node)
+
+            case _:
+                raise ParsingException(f'Unable to parse call_argument: {node.text}')
+
     @staticmethod
     def parse_binary_expression(node):
         pass

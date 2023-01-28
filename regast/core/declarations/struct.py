@@ -3,17 +3,14 @@ from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 from regast.core.variables.struct_member import StructMember
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class Struct(Core):
-    def __init__(
-        self,
-        name: Identifier,
-        members: List[StructMember]
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: Identifier = name
-        self._members: List[StructMember] = members
+        self._name: Identifier = None
+        self._members: List[StructMember] = []
 
     @property
     def name(self) -> Identifier:

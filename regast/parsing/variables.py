@@ -24,5 +24,5 @@ class VariableParser:
         pass
     
     @staticmethod
-    def parse_stuct_member(node):
+    def parse_struct_member(node):
         pass

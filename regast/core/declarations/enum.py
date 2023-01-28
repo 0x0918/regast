@@ -2,17 +2,14 @@ from typing import List
 
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class Enum(Core):
-    def __init__(
-        self,
-        name: Identifier,
-        values: List[Identifier]
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: Identifier = name
-        self._values: List[Identifier] = values
+        self._name: Identifier = None
+        self._values: List[Identifier] = []
 
     @property
     def name(self) -> Identifier:

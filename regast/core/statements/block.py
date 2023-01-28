@@ -1,17 +1,14 @@
 from typing import List
 
 from regast.core.statements.statement import Statement
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class Block(Statement):
-    def __init__(
-        self,
-        statements: List[Statement],
-        unchecked: bool = False
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._statements: List[Statement] = statements
-        self._unchecked: bool = unchecked
+        self._statements: List[Statement] = []
+        self._unchecked: bool = False
     
     @property
     def statements(self) -> List[Statement]:

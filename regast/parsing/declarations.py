@@ -3,17 +3,22 @@ from regast.core.common import StateMutability, Visibility
 from regast.core.declarations.contracts.contract import Contract, InheritanceSpecifier
 from regast.core.declarations.contracts.interface import Interface
 from regast.core.declarations.contracts.library import Library
+from regast.core.declarations.custom_error import CustomError
 from regast.core.declarations.directives.import_directive import Import
 from regast.core.declarations.directives.pragma_directive import Pragma
 from regast.core.declarations.directives.using_directive import UsingDirective
+from regast.core.declarations.enum import Enum
 from regast.core.declarations.functions.constructor import Constructor
 from regast.core.declarations.functions.fallback_function import FallbackFunction
-from regast.core.declarations.functions.function import Function
+from regast.core.declarations.functions.function import Function, ModifierInvocation
 from regast.core.declarations.functions.modifier import Modifier
 from regast.core.declarations.functions.receive_function import ReceiveFunction
 from regast.core.declarations.source_unit import SourceUnit
+from regast.core.declarations.struct import Struct
 from regast.exceptions import ParsingException
 from regast.parsing.expressions import ExpressionParser
+from regast.parsing.helpers import extract_call_arguments
+from regast.parsing.statements import StatementParser
 from regast.parsing.tree_sitter_node import TreeSitterNode
 from regast.parsing.types import TypeParser
 from regast.parsing.variables import VariableParser
@@ -102,30 +107,13 @@ class DeclarationParser:
         def parse_inheritance_specifier(node: TreeSitterNode):
             assert node.type == 'inheritance_specifier'
 
+            [ancestor], arguments, struct_arguments = extract_call_arguments(node.children)
+            assert ancestor.type == 'user_defined_type'
+
             inheritance_specifier = InheritanceSpecifier(node)
-
-            ancestor, *ancestor_arguments = node.children
             inheritance_specifier._name = TypeParser.parse_user_defined_type(ancestor)
-
-            for child_node in ancestor_arguments:
-                match child_node.type:
-                    # expression (normal argument)
-                    case 'call_argument' if len(child_node.children) == 1:
-                        expression = ExpressionParser.parse_expression(child_node)
-                        inheritance_specifier.arguments.append(expression)
-
-                    # struct arguments
-                    case 'call_argument' if len(child_node) == 1:
-                        assert child_node.children[0] == '{' and child_node.children[-1] == '}' 
-
-                        struct_arguments = ExpressionParser.parse_struct_arguments(child_node)
-                        inheritance_specifier._struct_arguments = struct_arguments
-                        
-                    case '(' | ')' | ',':
-                        pass
-
-                    case other:
-                        raise ParsingException(f'Unknown tree-sitter node type for call_arguments: {other}')
+            inheritance_specifier._arguments = arguments
+            inheritance_specifier._struct_arguments = struct_arguments
 
             contract._inheritance_specifiers.append(inheritance_specifier)
 
@@ -363,16 +351,58 @@ class DeclarationParser:
                 function = Modifier(node)
 
         def parse_modifier_invocation(node: TreeSitterNode):
-            pass
+            assert node.type == 'modifier_invocation'
+
+            identifier_path, arguments, struct_arguments = extract_call_arguments(node.children)
+
+            modifier_invocation = ModifierInvocation(node)
+            modifier_invocation._arguments = arguments
+            modifier_invocation._struct_arguments = struct_arguments
+
+            for child_node in identifier_path:
+                match child_node.type:
+                    case 'identifier':
+                        identifier = ExpressionParser.parse_identifier(child_node)
+                        modifier_invocation._identifiers.append(identifier)
+                    case '.':
+                        pass
+                    case other:
+                        raise ParsingException(f'Unknown tree-sitter node type in modifier_invocation: {other}')
+
+            function._modifiers.append(modifier_invocation)
 
         def parse_override_specifier(node: TreeSitterNode):
-            pass
+            assert node.type == 'override_specifier'
+
+            override_token, *user_defined_types = node.children
+            assert override_token.type == 'override'
+
+            function._override = True
+            for child_node in user_defined_types:
+                match child_node.type:
+                    case 'user_defined_type':
+                        user_defined_type = ExpressionParser.parse_user_defined_type(child_node)
+                        function._overrides.append(user_defined_type)
+                    case '(' | ')' | ',':
+                        pass
+                    case other:
+                        raise ParsingException(f'Unknown tree-sitter node type in override_specifier: {other}')
 
         def parse_return_type_definition(node: TreeSitterNode):
-            pass
+            assert node.type == 'return_type_definition'
 
-        def parse_function_body(node: TreeSitterNode):
-            pass
+            returns_token, open_bracket_token, *parameters, close_bracket_token = node.children
+            assert returns_token.type == 'returns' and open_bracket_token.type == '(' and close_bracket_token.type == ')'
+
+            for child_node in parameters:
+                match child_node.type:
+                    case 'parameter':
+                        parameter = VariableParser.parse_parameter(child_node)
+                        function._return_parameters.append(parameter)
+                    case ',':
+                        pass
+                    case other:
+                        raise ParsingException(f'Unknown tree-sitter node type in return_type_definition: {other}')
 
         for child_node in node.children:
             match child_node.type:
@@ -388,11 +418,11 @@ class DeclarationParser:
                     parse_modifier_invocation(child_node)
 
                 case 'visibility' | 'internal' | 'public':
-                    assert not function.visibility
+                    assert not function.declared_visibility
                     function._visibility = Visibility(child_node.text)
 
                 case 'state_mutability' | 'payable':
-                    assert not function.mutability
+                    assert not function.declared_mutability
                     function._mutability = StateMutability(child_node.text)
 
                 case 'virtual':
@@ -405,7 +435,7 @@ class DeclarationParser:
                     parse_return_type_definition(child_node)
 
                 case 'function_body':
-                    parse_function_body(child_node)
+                    function._body = StatementParser.parse_block_statement(child_node)
 
                 case 'function' | 'constructor' | 'modifier' | 'fallback' | 'receive' | '(' | ')' | ',':
                     pass
@@ -418,15 +448,67 @@ class DeclarationParser:
     # OTHERS
     @staticmethod
     def parse_error_declaration(node):
-        pass
+        assert node.type == 'error_declaration'
+
+        error_token, name, open_bracket_token, *error_parameters, close_bracket_token = node.children
+        assert error_token.type == 'error' and open_bracket_token.type == '(' and close_bracket_token.type == ')'
+        assert name.type == 'identifier'
+
+        custom_error = CustomError(node)
+        custom_error._name = ExpressionParser.parse_identifier(name)
+
+        for child_node in error_parameters:
+            match child_node.type:
+                case 'error_paramter':
+                    error_paramter = VariableParser.parse_error_parameter(child_node)
+                    custom_error._parameters.append(error_paramter)
+                case ',':
+                    pass
+                case other:
+                    raise ParsingException(f'Unknown tree-sitter node type in error_declaration: {other}')
+
+        return custom_error
 
     @staticmethod
     def parse_enum_declaration(node):
-        pass
+        assert node.type == 'enum_declaration'
     
+        enum_token, name, open_bracket_token, *enum_values, close_bracket_token = node.children
+        assert enum_token.type == 'enum' and open_bracket_token.type == '{' and close_bracket_token.type == '}'
+        assert name.type == 'identifier'
+
+        enum = Enum(node)
+        enum._name = ExpressionParser.parse_identifier(name)
+
+        for child_node in enum_values:
+            match child_node.type:
+                case 'enum_value':
+                    enum_value = ExpressionParser.parse_identifier(child_node)
+                    enum._values.append(enum_value)
+                case ',':
+                    pass
+                case other:
+                    raise ParsingException(f'Unknown tree-sitter node type in enum_declaration: {other}')
+
+        return enum
+
     @staticmethod
     def parse_struct_declaration(node):
-        pass
+        assert node.type == 'struct_declaration'
+    
+        struct_token, name, open_bracket_token, *struct_members, close_bracket_token = node.children
+        assert struct_token.type == 'struct' and open_bracket_token.type == '{' and close_bracket_token.type == '}'
+        assert name.type == 'identifier'
+
+        struct = Struct(node)
+        struct._name = ExpressionParser.parse_identifier(name)
+
+        for struct_member_node in struct_members:
+            assert struct_member_node.type == 'struct_member'
+            struct_member = VariableParser.parse_struct_member(struct_member_node)
+            struct._members.append(struct_member)
+
+        return struct
 
     @staticmethod
     def parse_event_definition(node):
@@ -435,6 +517,3 @@ class DeclarationParser:
     @staticmethod
     def parse_user_defined_type_definition(node):
         pass
-
-
-# TODO: Rewrite using match
