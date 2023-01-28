@@ -1,12 +1,13 @@
 from typing import List, Optional
 from regast.core.core import Core
 from regast.core.statements.block import Block
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class FunctionBody(Core):
-    def __init__(self, body: Optional[Block] = None):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._body: Optional[Block] = body
+        self._body: Optional[Block] = None
 
     @property
     def body(self) -> Optional[Block]:

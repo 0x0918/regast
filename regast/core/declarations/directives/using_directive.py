@@ -3,19 +3,16 @@ from typing import List
 from regast.core.core import Core
 from regast.core.types.type import Type
 from regast.core.types.user_defined_type import UserDefinedType
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class UsingDirective(Core):
-    def __init__(
-        self,
-        libraries: List[UserDefinedType],
-        type: Type,
-        is_global: bool = False,
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._libraries: List[UserDefinedType] = libraries
+        self._libraries: List[UserDefinedType] = []
         self._type: Type = type
-        self._global: bool = is_global
+        self._any_type: bool = False
+        self._global: bool = False
 
     @property
     def libraries(self) -> List[UserDefinedType]:
@@ -24,6 +21,10 @@ class UsingDirective(Core):
     @property
     def type(self) -> Type:
         return self._type
+
+    @property
+    def any_type(self) -> bool:
+        return self._any_type
 
     @property
     def is_global(self) -> bool:

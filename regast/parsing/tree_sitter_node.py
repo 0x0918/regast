@@ -1,6 +1,4 @@
-from typing import Dict, List, Optional
-
-from regast.core.declarations.comment import Comment
+from typing import List
 
 
 class TreeSitterNode:
@@ -8,7 +6,7 @@ class TreeSitterNode:
         self._underlying_node = node
 
         self._children: List["TreeSitterNode"] = []
-        self._comments: List[Comment] = []
+        self._comments: List["Comment"] = []
         
     @property
     def underlying_node(self):
@@ -27,11 +25,11 @@ class TreeSitterNode:
         return list(self._children)
 
     @property
-    def comments(self) -> List[Comment]:
+    def comments(self) -> List["Comment"]:
         return list(self._comments)
 
     def add_child(self, child: "TreeSitterNode"):
         self._children.append(child)
 
-    def extend_comments(self, comments: List[Comment]):
+    def extend_comments(self, comments: List["Comment"]):
         self._comments.extend(comments)

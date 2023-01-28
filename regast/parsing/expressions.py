@@ -78,7 +78,7 @@ class ExpressionParser:
 
     @staticmethod
     def parse_user_defined_type(node):
-        pass
+        assert node.type in ['user_defined_type', 'type_alias']
 
     @staticmethod
     def parse_tuple_expression(node):

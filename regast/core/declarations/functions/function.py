@@ -9,19 +9,15 @@ from regast.core.statements.block import Block
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.parameter import Parameter
 from regast.core.common import Visibility, StateMutability
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class ModifierInvocation(Core):
-    def __init__(
-        self, 
-        name: UserDefinedType,
-        struct_arguments: Optional[StructArguments] = None,
-        arguments: List[Expression] = [],
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: UserDefinedType = name
-        self._struct_arguments: Optional[StructArguments] = struct_arguments
-        self._arguments: List[Expression] = arguments
+        self._name: UserDefinedType = None
+        self._struct_arguments: Optional[StructArguments] = None
+        self._arguments: List[Expression] = []
 
     @property
     def name(self) -> str:
@@ -52,34 +48,23 @@ class ModifierInvocation(Core):
         return False
 
 class Function(FunctionBody):
-    def __init__(
-        self,
-        name: Identifier,
-        parameters: List[Parameter] = [],
-        return_parameters: List[Parameter] = [],
-        modifiers: List[ModifierInvocation] = [],
-        visibility: Optional[Visibility] = None,
-        mutability: Optional[StateMutability] = None,
-        virtual: bool = False,
-        overrides: List[UserDefinedType] = [],
-        body: Optional[Block] = None,
-    ):
-        super().__init__(body=body)
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._name: Identifier = name
+        self._name: Optional[Identifier] = None
         
-        self._parameters: List[Parameter] = parameters
-        self._return_parameters: List[Parameter] = return_parameters
-        self._modifiers: List[ModifierInvocation] = modifiers
+        self._parameters: List[Parameter] = []
+        self._return_parameters: List[Parameter] = []
+        self._modifiers: List[ModifierInvocation] = []
 
-        self._visibility: Optional[Visibility] = visibility
-        self._mutability: Optional[StateMutability] = mutability
+        self._visibility: Optional[Visibility] = None
+        self._mutability: Optional[StateMutability] = None
 
-        self._virtual: bool = virtual
-        self._overrides: List[UserDefinedType] = overrides
+        self._virtual: bool = False
+        self._overrides: List[UserDefinedType] = []
 
     @property
-    def name(self) -> Identifier:
+    def name(self) -> Optional[Identifier]:
         return self._name
 
     @property

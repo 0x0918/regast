@@ -1,5 +1,9 @@
 class TypeParser:
     @staticmethod
+    def parse_type_name(node):
+        pass
+    
+    @staticmethod
     def parse_primitive_type(node):
         pass
     

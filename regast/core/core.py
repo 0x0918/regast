@@ -1,12 +1,14 @@
 from typing import List, Union
 
+from regast.parsing.tree_sitter_node import TreeSitterNode
+
 
 class Core:
-    def __init__(self, node):
-        self._tree_sitter_node = node 
+    def __init__(self, node: TreeSitterNode):
+        self._tree_sitter_node: TreeSitterNode = node 
 
     @property
-    def tree_sitter_node(self):
+    def tree_sitter_node(self) -> TreeSitterNode:
         return self._tree_sitter_node
 
     @property

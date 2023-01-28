@@ -1,17 +1,14 @@
 from typing import List
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class Pragma(Core):
-    def __init__(
-        self,
-        name: Identifier,
-        value: str
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
         
-        self._name: Identifier = name
-        self._value: str = value
+        self._name: Identifier = None
+        self._value: str = None
 
     @property
     def name(self) -> Identifier:
