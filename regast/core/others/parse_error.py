@@ -1,10 +1,5 @@
-from regast.core.core import Core
-
-
-class Comment(Core):
+class ParseError:
     def __init__(self, node):
-        super().__init__(node)
-
         self._text: str = node.text.decode()
     
     @property
@@ -17,6 +12,6 @@ class Comment(Core):
     def __eq__(self, other):
         if isinstance(other, str):
             return self.text == other
-        elif isinstance(other, Comment):
+        elif isinstance(other, ParseError):
             return self.text == other.text
         return False

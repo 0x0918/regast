@@ -1,7 +1,7 @@
 from typing import List
 
 from regast.core.core import Core
-from regast.core.declarations.comment import Comment
+from regast.core.others.comment import Comment
 from regast.core.declarations.contracts.contract import Contract
 from regast.core.declarations.contracts.interface import Interface
 from regast.core.declarations.contracts.library import Library

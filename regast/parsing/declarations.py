@@ -84,9 +84,6 @@ class DeclarationParser:
                     type_definition = DeclarationParser.parse_user_defined_type_definition(child_node)
                     source_unit._type_definitions.append(type_definition) 
 
-                case 'ERROR':
-                    pass
-
                 case other:
                     raise ParsingException(f'Unknown tree-sitter node for source_unit: {other}')
                     
@@ -216,7 +213,7 @@ class DeclarationParser:
         assert node.type == 'import_directive'
 
         import_directive = Import(node)
-        match [x.type for x in node.children]:
+        match node.children_types:
             # _source_import without _import_alias
             case ['import', 'string']:
                 _, source = node.children
@@ -449,7 +446,7 @@ class DeclarationParser:
 
     # OTHERS
     @staticmethod
-    def parse_error_declaration(node):
+    def parse_error_declaration(node) -> CustomError:
         assert node.type == 'error_declaration'
 
         error_token, name, open_bracket_token, *error_parameters, close_bracket_token = node.children
@@ -472,7 +469,7 @@ class DeclarationParser:
         return custom_error
 
     @staticmethod
-    def parse_enum_declaration(node):
+    def parse_enum_declaration(node) -> Enum:
         assert node.type == 'enum_declaration'
     
         enum_token, name, open_bracket_token, *enum_values, close_bracket_token = node.children
@@ -495,7 +492,7 @@ class DeclarationParser:
         return enum
 
     @staticmethod
-    def parse_struct_declaration(node):
+    def parse_struct_declaration(node) -> Struct:
         assert node.type == 'struct_declaration'
     
         struct_token, name, open_bracket_token, *struct_members, close_bracket_token = node.children
@@ -513,13 +510,13 @@ class DeclarationParser:
         return struct
 
     @staticmethod
-    def parse_event_definition(node):
+    def parse_event_definition(node) -> Event:
         assert node.type == 'event_definition'
 
         event = Event(node)
 
         name, event_parameters = None, []
-        match [x.type for x in node.children]:
+        match node.children_types:
             case ['event', 'identifier', '(', *_, ')', 'anonymous']:
                 _, name, *event_parameters, _ = node.children 
                 event._anonymous = True
@@ -543,7 +540,7 @@ class DeclarationParser:
         return event
 
     @staticmethod
-    def parse_user_defined_type_definition(node):
+    def parse_user_defined_type_definition(node) -> TypeDefinition:
         assert node.type == 'user_defined_type_definition'
 
         type_token, name, is_token, primitive_type = node.children

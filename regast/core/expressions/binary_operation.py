@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List
 
 from regast.core.expressions.expression import Expression
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class BinaryOperator(str, Enum):
     POWER = "**"
@@ -26,17 +27,11 @@ class BinaryOperator(str, Enum):
     OROR = "||"
 
 class BinaryOperation(Expression):
-    def __init__(
-        self,
-        expressions: List[Expression],
-        operator: BinaryOperator
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        assert len(expressions) == 2
-
-        self._expressions: List[Expression] = expressions
-        self._operator: BinaryOperation = operator
+        self._expressions: List[Expression] = []
+        self._operator: BinaryOperation = None
 
     @property
     def expressions(self) -> List[Expression]:
