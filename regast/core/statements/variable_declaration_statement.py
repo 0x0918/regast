@@ -97,14 +97,12 @@ class VariableDeclarationFromTupleStatement(Statement):
         return list(self._variable_declarations)
 
     @property
-    def initial_expression(self) -> Optional[Expression]:
+    def initial_expression(self) -> Expression:
         return self._expression
 
     @property
     def children(self) -> List:
-        if self.initial_expression:
-            self.variable_declarations + [self.initial_expression]
-        return self.variable_declarations
+        return self.variable_declarations + [self.initial_expression]
         
     def __eq__(self, other):
         if isinstance(other, VariableDeclarationFromTupleStatement):
@@ -120,7 +118,7 @@ class VariableDeclarationWithVarStatement(Statement):
         Deprecated since v0.4.20
         var (x, y, z) = f()
         """
-        super().__init__()
+        super().__init__(node)
 
         self._names: List[Identifier] = []
         self._expression: Expression = None
@@ -130,14 +128,12 @@ class VariableDeclarationWithVarStatement(Statement):
         return self._names
 
     @property
-    def initial_expression(self) -> Optional[Expression]:
+    def initial_expression(self) -> Expression:
         return self._expression
 
     @property
     def children(self) -> List:
-        if self.initial_expression:
-            return self.names + [self.initial_expression]
-        return self.names        
+        return self.names + [self.initial_expression]
 
     def __eq__(self, other):
         if isinstance(other, VariableDeclarationWithVarStatement):
