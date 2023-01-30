@@ -19,7 +19,7 @@ from regast.core.declarations.struct import Struct
 from regast.core.declarations.type_definition import TypeDefinition
 from regast.exceptions import ParsingException
 from regast.parsing.expressions import ExpressionParser
-from regast.parsing.helpers import extract_call_arguments
+from regast.parsing.helpers import extract_call_arguments, extract_parameters, extract_typed_nodes_between_brackets
 from regast.parsing.statements import StatementParser
 from regast.parsing.tree_sitter_node import TreeSitterNode
 from regast.parsing.types import TypeParser
@@ -52,7 +52,7 @@ class DeclarationParser:
                 case 'interface_declaration':
                     interface = DeclarationParser.parse_contracts(child_node)
                     assert isinstance(interface, Interface)
-                    source_unit._interfaces.append(contract)
+                    source_unit._interfaces.append(interface)
 
                 case 'library_declaration':
                     library = DeclarationParser.parse_contracts(child_node)
@@ -106,7 +106,7 @@ class DeclarationParser:
         def parse_inheritance_specifier(node: TreeSitterNode):
             assert node.type == 'inheritance_specifier'
 
-            [ancestor], arguments, struct_arguments = extract_call_arguments(node.children)
+            arguments, struct_arguments, [ancestor] = extract_call_arguments(node)
             assert ancestor.type == 'user_defined_type'
 
             inheritance_specifier = InheritanceSpecifier(node)
@@ -352,7 +352,7 @@ class DeclarationParser:
         def parse_modifier_invocation(node: TreeSitterNode):
             assert node.type == 'modifier_invocation'
 
-            identifier_path, arguments, struct_arguments = extract_call_arguments(node.children)
+            arguments, struct_arguments, identifier_path = extract_call_arguments(node)
 
             modifier_invocation = ModifierInvocation(node)
             modifier_invocation._arguments = arguments
@@ -373,35 +373,22 @@ class DeclarationParser:
         def parse_override_specifier(node: TreeSitterNode):
             assert node.type == 'override_specifier'
 
-            override_token, *user_defined_types = node.children
+            user_defined_types, [override_token] = extract_typed_nodes_between_brackets(
+                node, 'user_defined_type', '(', ')',
+                parsing_function=ExpressionParser.parse_user_defined_type
+            )
             assert override_token.type == 'override'
-
+            
             function._override = True
-            for child_node in user_defined_types:
-                match child_node.type:
-                    case 'user_defined_type':
-                        user_defined_type = ExpressionParser.parse_user_defined_type(child_node)
-                        function._overrides.append(user_defined_type)
-                    case '(' | ')' | ',':
-                        pass
-                    case other:
-                        raise ParsingException(f'Unknown tree-sitter node type in override_specifier: {other}')
+            function._overrides.extend(user_defined_types)
 
         def parse_return_type_definition(node: TreeSitterNode):
             assert node.type == 'return_type_definition'
 
-            returns_token, open_bracket_token, *parameters, close_bracket_token = node.children
-            assert returns_token.type == 'returns' and open_bracket_token.type == '(' and close_bracket_token.type == ')'
+            return_parameters, [returns_token] = extract_parameters(node)
+            assert returns_token.type == 'returns'
 
-            for child_node in parameters:
-                match child_node.type:
-                    case 'parameter':
-                        parameter = VariableParser.parse_parameter(child_node)
-                        function._return_parameters.append(parameter)
-                    case ',':
-                        pass
-                    case other:
-                        raise ParsingException(f'Unknown tree-sitter node type in return_type_definition: {other}')
+            function._return_parameters.extend(return_parameters)
 
         for child_node in node.children:
             match child_node.type:
@@ -449,63 +436,48 @@ class DeclarationParser:
     def parse_error_declaration(node) -> CustomError:
         assert node.type == 'error_declaration'
 
-        error_token, name, open_bracket_token, *error_parameters, close_bracket_token = node.children
-        assert error_token.type == 'error' and open_bracket_token.type == '(' and close_bracket_token.type == ')'
-        assert name.type == 'identifier'
+        error_parameters, [error_token, name] = extract_typed_nodes_between_brackets(
+            node, 'error_parameter', '(', ')',
+            parsing_function=VariableParser.parse_error_parameter
+        )
+        assert error_token.type == 'error' and name.type == 'identifier'
 
         custom_error = CustomError(node)
         custom_error._name = ExpressionParser.parse_identifier(name)
-
-        for child_node in error_parameters:
-            match child_node.type:
-                case 'error_paramter':
-                    error_paramter = VariableParser.parse_error_parameter(child_node)
-                    custom_error._parameters.append(error_paramter)
-                case ',':
-                    pass
-                case other:
-                    raise ParsingException(f'Unknown tree-sitter node type in error_declaration: {other}')
+        custom_error._parameters = error_parameters
 
         return custom_error
 
     @staticmethod
     def parse_enum_declaration(node) -> Enum:
         assert node.type == 'enum_declaration'
-    
-        enum_token, name, open_bracket_token, *enum_values, close_bracket_token = node.children
-        assert enum_token.type == 'enum' and open_bracket_token.type == '{' and close_bracket_token.type == '}'
-        assert name.type == 'identifier'
 
+        enum_values, [enum_token, name] = extract_typed_nodes_between_brackets(
+            node, 'enum_value', '{', '}',
+            parsing_function=ExpressionParser.parse_identifier
+        )
+        assert enum_token.type == 'enum' and name.type == 'identifier'
+    
         enum = Enum(node)
         enum._name = ExpressionParser.parse_identifier(name)
-
-        for child_node in enum_values:
-            match child_node.type:
-                case 'enum_value':
-                    enum_value = ExpressionParser.parse_identifier(child_node)
-                    enum._values.append(enum_value)
-                case ',':
-                    pass
-                case other:
-                    raise ParsingException(f'Unknown tree-sitter node type in enum_declaration: {other}')
+        enum._values = enum_values
 
         return enum
 
     @staticmethod
     def parse_struct_declaration(node) -> Struct:
         assert node.type == 'struct_declaration'
-    
-        struct_token, name, open_bracket_token, *struct_members, close_bracket_token = node.children
-        assert struct_token.type == 'struct' and open_bracket_token.type == '{' and close_bracket_token.type == '}'
-        assert name.type == 'identifier'
+
+        struct_members, [struct_token, name] = extract_typed_nodes_between_brackets(
+            node, 'struct_member', '{', '}',
+            comma_separated=False,
+            parsing_function=VariableParser.parse_struct_member
+        )
+        assert struct_token.type == 'struct' and name.type == 'identifier'
 
         struct = Struct(node)
         struct._name = ExpressionParser.parse_identifier(name)
-
-        for struct_member_node in struct_members:
-            assert struct_member_node.type == 'struct_member'
-            struct_member = VariableParser.parse_struct_member(struct_member_node)
-            struct._members.append(struct_member)
+        struct._members = struct_members
 
         return struct
 
@@ -513,29 +485,23 @@ class DeclarationParser:
     def parse_event_definition(node) -> Event:
         assert node.type == 'event_definition'
 
-        event = Event(node)
+        event_parameters, [event_token, name, *anonymous_token] = extract_typed_nodes_between_brackets(
+            node, 'event_paramater', '(', ')',
+            parsing_function=VariableParser.parse_event_parameter
+        )
+        assert event_token.type == 'event' and name.type == 'identifier'
 
-        name, event_parameters = None, []
-        match node.children_types:
-            case ['event', 'identifier', '(', *_, ')', 'anonymous']:
-                _, name, *event_parameters, _ = node.children 
+        event = Event(node)
+        event._name = ExpressionParser.parse_identifier(name)
+        event._parameters = event_parameters
+
+        match anonymous_token:
+            case []:
+                pass
+            case [node] if node.type == 'anonymous':
                 event._anonymous = True
-            case ['event', 'identifier', '(', *_, ')']:
-                _, name, *event_parameters = node.children
             case _:
                 raise ParsingException(f'Unable to parse event_definition: {node.text}')
-            
-        event._name = ExpressionParser.parse_identifier(name)
-
-        for child_node in event_parameters:
-            match child_node.type:
-                case 'event_paramater':
-                    event_parameter = VariableParser.parse_event_parameter(child_node)
-                    event._parameters.append(event_parameter)
-                case '(' | ')' | ',':
-                    pass
-                case other:
-                    raise ParsingException(f'Unknown tree-sitter node type in event_definition: {other}')
 
         return event
 

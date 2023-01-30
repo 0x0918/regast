@@ -6,23 +6,19 @@ from regast.core.expressions.identifier import Identifier
 from regast.core.statements.statement import Statement
 from regast.core.statements.block import Block
 from regast.core.variables.parameter import Parameter
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class CatchClause(Core):
-    def __init__(
-        self,
-        block: Block,
-        parameters: List[Parameter] = [],
-        error: Optional[Identifier] = None,
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._block: Block = block
-        self._parameters: List[Parameter] = parameters
-        self._error: Optional[Identifier] = error
+        self._body: Block = None
+        self._parameters: List[Parameter] = []
+        self._error: Optional[Identifier] = None
 
     @property
     def body(self) -> Block:
-        return self._block
+        return self._body
     
     @property
     def parameters(self) -> List[Parameter]:
@@ -41,23 +37,17 @@ class CatchClause(Core):
 
     def __eq__(self, other):
         if isinstance(other, CatchClause):
-            return self.block == other.block and self.parameters == other.parameters and self.error == other.error
+            return self.body == other.body and self.parameters == other.parameters and self.error == other.error
         return False
 
 class TryStatement(Statement):
-    def __init__(
-        self,
-        try_expression: Expression,
-        body: Block,
-        catch_clauses: List[CatchClause],
-        parameters: List[Parameter] = []
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._try_expression: Expression = try_expression
-        self._body: Block = body
-        self._catch_clauses: List[CatchClause] = catch_clauses
-        self._parameters: List[Parameter] = parameters
+        self._try_expression: Expression = None
+        self._body: Block = None
+        self._catch_clauses: List[CatchClause] = []
+        self._parameters: List[Parameter] = []
 
     @property
     def try_expression(self) -> Expression:

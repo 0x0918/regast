@@ -2,22 +2,18 @@ from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class IfStatement(Statement):
-    def __init__(
-        self,
-        condition: Expression,
-        true_body: Statement,
-        false_body: Optional[Statement] = None
-    ):
+    def __init__(self, node: TreeSitterNode):
         """
         if ( <condition> ) { <true_body> } else { <false_body> }
         """
-        super().__init__()
+        super().__init__(node)
 
-        self._condition: Expression = condition
-        self._true_body: Statement = true_body
-        self._false_body: Optional[Statement] = false_body
+        self._condition: Expression = None
+        self._true_body: Statement = None
+        self._false_body: Optional[Statement] = None
     
     @property
     def condition(self) -> Expression:

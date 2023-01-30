@@ -1,21 +1,18 @@
 from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 
 class WhileStatement(Statement):
-    def __init__(
-        self,
-        condition: Expression,
-        body: Statement,
-    ):
+    def __init__(self, node: TreeSitterNode):
         """
         while ( <condition> ) { <body> }
         """
-        super().__init__()
+        super().__init__(node)
 
-        self._condition: Expression = condition
-        self._body: Statement = body
+        self._condition: Expression = None
+        self._body: Statement = None
 
     @property
     def condition(self) -> Expression:

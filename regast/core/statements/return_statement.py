@@ -2,15 +2,13 @@ from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 class ReturnStatement(Statement):
-    def __init__(
-        self,
-        return_value: Optional[Expression] = None,
-    ):
-        super().__init__()
+    def __init__(self, node: TreeSitterNode):
+        super().__init__(node)
 
-        self._return_value: Optional[Expression] = return_value
+        self._return_value: Optional[Expression] = None
 
     @property
     def return_value(self) -> Optional[Expression]:

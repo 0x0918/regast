@@ -1,4 +1,5 @@
-from typing import List
+from typing import Dict, List, Optional
+from collections import defaultdict
 
 from regast.core.others.comment import Comment
 from regast.core.others.parse_error import ParseError
@@ -10,6 +11,7 @@ class TreeSitterNode:
 
         self._children: List[TreeSitterNode] = []
         self._children_types: List[str] = []
+        self._field_to_children: Dict[str, List[TreeSitterNode]] = defaultdict(list)
 
         self._comments: List[Comment] = []
         self._parse_errors: List[ParseError] = []
@@ -44,8 +46,17 @@ class TreeSitterNode:
     def parse_errors(self) -> List[ParseError]:
         return list(self._parse_errors)
 
+    def child_by_field_name(self, field: str) -> Optional["TreeSitterNode"]:
+        if field in self._field_to_children:
+            return self._field_to_children[field][0]
+
+    def children_by_field_name(self, field: str) -> List["TreeSitterNode"]:
+        return self._field_to_children[field]
+
     def parse_underlying_node(self, node):
-        for child_node in node.children:
+        for i in range(len(node.children)):
+            child_node = node.children[i]
+
             match child_node.type:
                 case 'comment':
                     self._comments.append(Comment(child_node))
@@ -58,3 +69,8 @@ class TreeSitterNode:
                     self._children.append(child)
                     self._comments.extend(child.comments)
                     self._parse_errors.extend(child.parse_errors)
+
+                    field_name = node.field_name_for_child(i)
+                    if field_name:
+                        self._field_to_children[field_name].append(child)
+

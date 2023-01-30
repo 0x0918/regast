@@ -2,33 +2,28 @@ from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
-from regast.core.variables.local_variable import LocalVariable
+from regast.core.statements.variable_declaration_statement import VariableDeclarationStatement
+from regast.parsing.tree_sitter_node import TreeSitterNode
 
 
 class ForStatement(Statement):
-    def __init__(
-        self,
-        body: Statement,
-        initialization: Optional[LocalVariable] = None,
-        condition: Optional[Expression] = None,
-        iteration: Optional[Expression] = None
-    ):
+    def __init__(self, node: TreeSitterNode):
         """
         for ( <initialization> ; <condition> ; <iteration> ) { <body> }
         """
-        super().__init__()
+        super().__init__(node)
 
-        self._body: Statement = body
-        self._initialization: Optional[LocalVariable] = initialization
-        self._condition: Optional[Expression] = condition
-        self._iteration: Optional[Expression] = iteration
+        self._body: Statement = None
+        self._initialization: Optional[VariableDeclarationStatement] = None
+        self._condition: Optional[Expression] = None
+        self._iteration: Optional[Expression] = None
 
     @property
     def body(self) -> Statement:
         return self._body
 
     @property
-    def initialization(self) -> Optional[LocalVariable]:
+    def initialization(self) -> Optional[VariableDeclarationStatement]:
         return self._initialization
 
     @property

@@ -51,7 +51,7 @@ class ExpressionParser:
 
         match [x.type for x in node.children]:
             # expression (normal argument)
-            case [expression_node]:
+            case [_]:
                 return ExpressionParser.parse_expression(node.children[0])
 
             # struct arguments
