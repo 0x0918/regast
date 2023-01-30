@@ -14,8 +14,8 @@ from regast.core.expressions.type_expression import TypeExpression
 from regast.core.expressions.unary_operation import UnaryOperation, UnaryOperator
 from regast.core.expressions.update_operation import UpdateOperation, UpdateOperator
 from regast.exceptions import ParsingException
-from regast.parsing.helper import extract_call_arguments, extract_typed_nodes_between_brackets
-from regast.parsing.types import TypeParser
+from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_typed_nodes_between_brackets
+from regast.parsing.tree_sitter.types import TypeParser
 
 
 class ExpressionParser:

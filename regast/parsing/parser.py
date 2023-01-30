@@ -1,10 +1,9 @@
 from typing import Dict
 import tree_sitter as ts
-from regast.core.others.comment import Comment
 
 from regast.core.declarations.source_unit import SourceUnit
 from regast.exceptions import ParsingException
-from regast.parsing.declarations import DeclarationParser
+from regast.parsing.tree_sitter.declarations import DeclarationParser
 from regast.parsing.ast_node import ASTNode
 from regast.utilities.definitions import TREE_SITTER_SOLIDITY_LIBRARY_PATH
 

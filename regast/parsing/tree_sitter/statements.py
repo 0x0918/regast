@@ -20,9 +20,9 @@ from regast.core.statements.variable_declaration_statement import VariableDeclar
 from regast.core.statements.while_statement import WhileStatement
 from regast.core.variables.variable import DataLocation
 from regast.exceptions import ParsingException
-from regast.parsing.expressions import ExpressionParser
-from regast.parsing.helper import extract_call_arguments, extract_parameters
-from regast.parsing.types import TypeParser
+from regast.parsing.tree_sitter.expressions import ExpressionParser
+from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_parameters
+from regast.parsing.tree_sitter.types import TypeParser
 
 
 class StatementParser:
