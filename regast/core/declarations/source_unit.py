@@ -14,10 +14,10 @@ from regast.core.declarations.directives.pragma_directive import Pragma
 from regast.core.declarations.struct import Struct
 from regast.core.declarations.type_definition import TypeDefinition
 from regast.core.variables.constant import Constant
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class SourceUnit(Core):
-    def __init__(self, node: TreeSitterNode, fname: str):
+    def __init__(self, node: ASTNode, fname: str):
         super().__init__(node)
 
         self._fname: str = fname
@@ -98,7 +98,7 @@ class SourceUnit(Core):
 
     @property
     def comments(self) -> List[Comment]:
-        return self.tree_sitter_node.comments
+        return self.ast_node.comments
 
     @property
     def children(self) -> List:

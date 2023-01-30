@@ -6,10 +6,10 @@ from regast.core.expressions.identifier import Identifier
 from regast.core.statements.statement import Statement
 from regast.core.types.type import Type
 from regast.core.variables.variable import DataLocation
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class VariableDeclaration(Core):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._type: Type = None
@@ -45,7 +45,7 @@ class VariableDeclaration(Core):
         return False
     
 class VariableDeclarationStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._variable_declaration: VariableDeclaration = None
@@ -86,7 +86,7 @@ class VariableDeclarationStatement(Statement):
         return False
 
 class VariableDeclarationFromTupleStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._variable_declarations: List[VariableDeclaration] = []
@@ -113,7 +113,7 @@ class VariableDeclarationFromTupleStatement(Statement):
         return False
 
 class VariableDeclarationWithVarStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         """
         Deprecated since v0.4.20
         var (x, y, z) = f()

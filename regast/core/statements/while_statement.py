@@ -1,11 +1,11 @@
 from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 
 class WhileStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         """
         while ( <condition> ) { <body> }
         """

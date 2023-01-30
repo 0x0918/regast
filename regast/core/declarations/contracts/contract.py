@@ -17,11 +17,11 @@ from regast.core.expressions.identifier import Identifier
 from regast.core.expressions.struct_expression import StructArguments
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.state_variable import StateVariable
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 
 class InheritanceSpecifier(Core):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._name: UserDefinedType = None
@@ -58,7 +58,7 @@ class InheritanceSpecifier(Core):
         return False
 
 class Contract(Core):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
         
         self._name: Identifier = None

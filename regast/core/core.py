@@ -1,15 +1,15 @@
 from typing import List, Union
 
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 
 class Core:
-    def __init__(self, node: TreeSitterNode):
-        self._tree_sitter_node: TreeSitterNode = node 
+    def __init__(self, node: ASTNode):
+        self._ast_node: ASTNode = node 
 
     @property
-    def tree_sitter_node(self) -> TreeSitterNode:
-        return self._tree_sitter_node
+    def ast_node(self) -> ASTNode:
+        return self._ast_node
 
     @property
     def children(self) -> List:
@@ -69,4 +69,4 @@ class Core:
         return instances[0] if len(core_types) == 1 else instances
 
     def __hash__(self):
-        return hash(self.tree_sitter_node)
+        return hash(self.ast_node)

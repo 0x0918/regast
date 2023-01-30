@@ -11,6 +11,9 @@ class DataLocation(str, Enum):
     STORAGE = 'storage'
     CALLDATA = 'calldata'
 
+    def __str__(self):
+        return self.value
+
 class Variable(Core):
     def __init__(
         self, 

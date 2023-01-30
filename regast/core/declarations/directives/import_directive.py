@@ -2,10 +2,10 @@ from typing import List, Dict, Optional, Union
 
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class Import(Core):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._import_path: str = None

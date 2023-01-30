@@ -19,16 +19,16 @@ from regast.core.declarations.struct import Struct
 from regast.core.declarations.type_definition import TypeDefinition
 from regast.exceptions import ParsingException
 from regast.parsing.expressions import ExpressionParser
-from regast.parsing.helpers import extract_call_arguments, extract_parameters, extract_typed_nodes_between_brackets
+from regast.parsing.helper import extract_call_arguments, extract_parameters, extract_typed_nodes_between_brackets
 from regast.parsing.statements import StatementParser
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 from regast.parsing.types import TypeParser
 from regast.parsing.variables import VariableParser
 
 
 class DeclarationParser:
     @staticmethod
-    def parse_source_unit(node: TreeSitterNode, fname: str) -> SourceUnit:
+    def parse_source_unit(node: ASTNode, fname: str) -> SourceUnit:
         assert node.type == 'source_file'
 
         source_unit = SourceUnit(node, fname)
@@ -91,7 +91,7 @@ class DeclarationParser:
 
     # CONTRACTS
     @staticmethod
-    def parse_contracts(node: TreeSitterNode) -> Union[Contract, Interface, Library]:
+    def parse_contracts(node: ASTNode) -> Union[Contract, Interface, Library]:
         assert node.type in ['contract_declaration', 'interface_declaration', 'library_declaration']
 
         contract = None
@@ -103,7 +103,7 @@ class DeclarationParser:
             case 'library_declaration':
                 contract = Library(node)
 
-        def parse_inheritance_specifier(node: TreeSitterNode):
+        def parse_inheritance_specifier(node: ASTNode):
             assert node.type == 'inheritance_specifier'
 
             arguments, struct_arguments, [ancestor] = extract_call_arguments(node)
@@ -116,7 +116,7 @@ class DeclarationParser:
 
             contract._inheritance_specifiers.append(inheritance_specifier)
 
-        def parse_contract_body(node: TreeSitterNode):
+        def parse_contract_body(node: ASTNode):
             assert node.type == 'contract_body'
 
             for child_node in node.children:
@@ -349,7 +349,7 @@ class DeclarationParser:
             case 'modifier_definition':
                 function = Modifier(node)
 
-        def parse_modifier_invocation(node: TreeSitterNode):
+        def parse_modifier_invocation(node: ASTNode):
             assert node.type == 'modifier_invocation'
 
             arguments, struct_arguments, identifier_path = extract_call_arguments(node)
@@ -370,7 +370,7 @@ class DeclarationParser:
 
             function._modifiers.append(modifier_invocation)
 
-        def parse_override_specifier(node: TreeSitterNode):
+        def parse_override_specifier(node: ASTNode):
             assert node.type == 'override_specifier'
 
             user_defined_types, [override_token] = extract_typed_nodes_between_brackets(
@@ -382,7 +382,7 @@ class DeclarationParser:
             function._override = True
             function._overrides.extend(user_defined_types)
 
-        def parse_return_type_definition(node: TreeSitterNode):
+        def parse_return_type_definition(node: ASTNode):
             assert node.type == 'return_type_definition'
 
             return_parameters, [returns_token] = extract_parameters(node)

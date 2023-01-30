@@ -8,10 +8,10 @@ from regast.core.expressions.struct_expression import StructArguments
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.parameter import Parameter
 from regast.core.common import Visibility, StateMutability
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class ModifierInvocation(Core):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._identifiers: List[Identifier] = []
@@ -47,7 +47,7 @@ class ModifierInvocation(Core):
         return False
 
 class Function(FunctionBody):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._name: Optional[Identifier] = None

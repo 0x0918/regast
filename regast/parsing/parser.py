@@ -5,7 +5,7 @@ from regast.core.others.comment import Comment
 from regast.core.declarations.source_unit import SourceUnit
 from regast.exceptions import ParsingException
 from regast.parsing.declarations import DeclarationParser
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 from regast.utilities.definitions import TREE_SITTER_SOLIDITY_LIBRARY_PATH
 
 
@@ -31,5 +31,5 @@ class Parser:
         except Exception as e:
             raise ParsingException(f"Failed to parse {fname}, throws: {e}")
 
-        root_node = TreeSitterNode(tree_sitter_tree.root_node)
+        root_node = ASTNode(tree_sitter_tree.root_node)
         self.fname_to_source_unit[fname] = DeclarationParser.parse_source_unit(root_node, fname)

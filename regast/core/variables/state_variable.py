@@ -13,6 +13,9 @@ class StateVariableMutability(str, Enum):
     IMMUTABLE = 'immutable'
     CONSTANT = 'constant'
 
+    def __str__(self):
+        return self.value
+
 class StateVariable(Variable):
     def __init__(
         self, 

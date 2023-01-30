@@ -4,18 +4,18 @@ from regast.core.expressions.expression import Expression
 from regast.core.expressions.struct_expression import StructArguments
 from regast.core.variables.parameter import Parameter
 from regast.exceptions import ParsingException
-from regast.parsing.expressions import ExpressionParser
-from regast.parsing.tree_sitter_node import TreeSitterNode
-from regast.parsing.variables import VariableParser
+from regast.parsing.ast_node import ASTNode
+import regast.parsing.expressions as parsing_expressions
+import regast.parsing.variables as parsing_variables
 
 def extract_typed_nodes_between_brackets(
-    node: TreeSitterNode,
+    node: ASTNode,
     node_type: str,
     open_bracket: str,
     close_bracket: str,
     comma_separated: bool = True,
     parsing_function: Callable = lambda node: node,
-) -> Tuple[List[TreeSitterNode], List[TreeSitterNode]]:
+) -> Tuple[List[ASTNode], List[ASTNode]]:
     """
     Iterates through child nodes of `node` and parses child nodes of `node_type` between `open_bracket` and `close_bracket`.
     """
@@ -40,7 +40,7 @@ def extract_typed_nodes_between_brackets(
 
     return parsed_nodes, remaining_nodes
 
-def extract_call_arguments(node: TreeSitterNode) -> Tuple[List[TreeSitterNode], List[Expression], Optional[StructArguments]]:
+def extract_call_arguments(node: ASTNode) -> Tuple[List[ASTNode], List[Expression], Optional[StructArguments]]:
     call_argument_nodes, remaining_nodes = extract_typed_nodes_between_brackets(
         node, 'call_argument', '(', ')'
     )
@@ -49,7 +49,7 @@ def extract_call_arguments(node: TreeSitterNode) -> Tuple[List[TreeSitterNode], 
     struct_arguments = None
 
     for node in call_argument_nodes:
-        call_argument = ExpressionParser.parse_call_argument(node)
+        call_argument = parsing_expressions.ExpressionParser.parse_call_argument(node)
         
         match call_argument:
             case Expression():
@@ -64,8 +64,8 @@ def extract_call_arguments(node: TreeSitterNode) -> Tuple[List[TreeSitterNode], 
 
     return arguments, struct_arguments, remaining_nodes
 
-def extract_parameters(node: TreeSitterNode) -> Tuple[List[TreeSitterNode], List[Parameter]]:
+def extract_parameters(node: ASTNode) -> Tuple[List[ASTNode], List[Parameter]]:
     return extract_typed_nodes_between_brackets(
         node, 'parameter', '(', ')',
-        parsing_function=VariableParser.parse_parameter
+        parsing_function=parsing_variables.VariableParser.parse_parameter
     )

@@ -3,11 +3,11 @@ from typing import List, Optional
 from regast.core.expressions.expression import Expression
 from regast.core.statements.statement import Statement
 from regast.core.statements.variable_declaration_statement import VariableDeclarationStatement
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 
 class ForStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         """
         for ( <initialization> ; <condition> ; <iteration> ) { <body> }
         """

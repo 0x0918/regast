@@ -1,17 +1,14 @@
 from typing import List
 from regast.core.expressions.expression import Expression
 from regast.core.types.elementary_type import ElementaryType
+from regast.parsing.ast_node import ASTNode
 
 class TypeCastExpression(Expression):
-    def __init__(
-        self, 
-        type: ElementaryType,
-        expression: Expression
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._type: ElementaryType = type
-        self._expression: Expression = expression
+        self._type: ElementaryType = None
+        self._expression: Expression = None
 
     @property
     def type(self) -> ElementaryType:

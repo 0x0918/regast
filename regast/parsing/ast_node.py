@@ -5,13 +5,13 @@ from regast.core.others.comment import Comment
 from regast.core.others.parse_error import ParseError
 
 
-class TreeSitterNode:
+class ASTNode:
     def __init__(self, node):
-        self._underlying_node = node
+        self._tree_sitter_node = node
 
-        self._children: List[TreeSitterNode] = []
+        self._children: List[ASTNode] = []
         self._children_types: List[str] = []
-        self._field_to_children: Dict[str, List[TreeSitterNode]] = defaultdict(list)
+        self._field_to_children: Dict[str, List[ASTNode]] = defaultdict(list)
 
         self._comments: List[Comment] = []
         self._parse_errors: List[ParseError] = []
@@ -19,19 +19,19 @@ class TreeSitterNode:
         self.parse_underlying_node(node)
         
     @property
-    def underlying_node(self):
-        return self._underlying_node
+    def tree_sitter_node(self):
+        return self._tree_sitter_node
 
     @property
     def type(self) -> str:
-        return self._underlying_node.type
+        return self._tree_sitter_node.type
 
     @property
     def text(self) -> str:
-        return self._underlying_node.text.decode()
+        return self._tree_sitter_node.text.decode()
 
     @property
-    def children(self) -> List["TreeSitterNode"]:
+    def children(self) -> List["ASTNode"]:
         return list(self._children)
 
     @property
@@ -46,11 +46,11 @@ class TreeSitterNode:
     def parse_errors(self) -> List[ParseError]:
         return list(self._parse_errors)
 
-    def child_by_field_name(self, field: str) -> Optional["TreeSitterNode"]:
+    def child_by_field_name(self, field: str) -> Optional["ASTNode"]:
         if field in self._field_to_children:
             return self._field_to_children[field][0]
 
-    def children_by_field_name(self, field: str) -> List["TreeSitterNode"]:
+    def children_by_field_name(self, field: str) -> List["ASTNode"]:
         return self._field_to_children[field]
 
     def parse_underlying_node(self, node):
@@ -65,7 +65,7 @@ class TreeSitterNode:
                 case other:
                     self._children_types.append(other)
 
-                    child = TreeSitterNode(child_node)
+                    child = ASTNode(child_node)
                     self._children.append(child)
                     self._comments.extend(child.comments)
                     self._parse_errors.extend(child.parse_errors)

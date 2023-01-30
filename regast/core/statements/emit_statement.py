@@ -3,11 +3,11 @@ from typing import List, Optional
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.struct_expression import StructArguments
 from regast.core.statements.statement import Statement
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 
 class EmitStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._event_name: Expression = None

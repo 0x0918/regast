@@ -2,7 +2,7 @@ from enum import Enum
 from typing import List
 
 from regast.core.expressions.expression import Expression
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class BinaryOperator(str, Enum):
     POWER = "**"
@@ -26,24 +26,24 @@ class BinaryOperator(str, Enum):
     ANDAND = "&&"
     OROR = "||"
 
+    def __str__(self):
+        return self.value
+
 class BinaryOperation(Expression):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
-        self._expressions: List[Expression] = []
+        self._left_expression: Expression = None
+        self._right_expression: Expression = None
         self._operator: BinaryOperation = None
 
     @property
-    def expressions(self) -> List[Expression]:
-        return list(self._expressions)
-
-    @property
     def left_expression(self) -> Expression:
-        return self.expressions[0]
+        return self._left_expression
 
     @property
     def right_expression(self) -> Expression:
-        return self.expressions[1]
+        return self._right_expression
 
     @property
     def operator(self) -> BinaryOperator:
@@ -51,12 +51,16 @@ class BinaryOperation(Expression):
         
     @property
     def children(self) -> List:
-        return self.expressions
+        return [self.left_expression, self.right_expression]
 
     def __str__(self):
-        return str(self.left_expression) + ' ' + str(self.operator) + ' ' + str(self.right_expression)
+        return f'{self.left_expression} {self.operator} {self.right_expression}'
 
     def __eq__(self, other):
         if isinstance(other, BinaryOperation):
-            return self.expressions == other.expressions and self.operator == other.operator
+            return (
+                self.left_expression == other.left_expression and
+                self.right_expression == other.right_expression and
+                self.operator == other.operator
+            )
         return False

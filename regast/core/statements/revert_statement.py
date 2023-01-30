@@ -3,10 +3,10 @@ from regast.core.expressions.call_expression import CallExpression
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.struct_expression import StructArguments
 from regast.core.statements.statement import Statement
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class RevertStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._error_name: Expression = None

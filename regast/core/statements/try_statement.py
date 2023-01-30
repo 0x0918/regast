@@ -6,10 +6,10 @@ from regast.core.expressions.identifier import Identifier
 from regast.core.statements.statement import Statement
 from regast.core.statements.block import Block
 from regast.core.variables.parameter import Parameter
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class CatchClause(Core):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._body: Block = None
@@ -41,7 +41,7 @@ class CatchClause(Core):
         return False
 
 class TryStatement(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._try_expression: Expression = None

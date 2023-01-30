@@ -1,10 +1,10 @@
 from typing import List
 
 from regast.core.statements.statement import Statement
-from regast.parsing.tree_sitter_node import TreeSitterNode
+from regast.parsing.ast_node import ASTNode
 
 class Block(Statement):
-    def __init__(self, node: TreeSitterNode):
+    def __init__(self, node: ASTNode):
         super().__init__(node)
 
         self._statements: List[Statement] = []

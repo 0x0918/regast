@@ -21,7 +21,7 @@ from regast.core.statements.while_statement import WhileStatement
 from regast.core.variables.variable import DataLocation
 from regast.exceptions import ParsingException
 from regast.parsing.expressions import ExpressionParser
-from regast.parsing.helpers import extract_call_arguments, extract_parameters
+from regast.parsing.helper import extract_call_arguments, extract_parameters
 from regast.parsing.types import TypeParser
 
 
@@ -195,9 +195,9 @@ class StatementParser:
                 _, open_bracket, *statements, close_bracket, body = node.children
 
                 # Since initial, condition and update are all optional, determine which is missing using text
-                offset = node.underlying_node.start_point[1]
-                lo = open_bracket.underlying_node.start_point[1]
-                hi = close_bracket.underlying_node.start_point[1]
+                offset = node.tree_sitter_node.start_point[1]
+                lo = open_bracket.tree_sitter_node.start_point[1]
+                hi = close_bracket.tree_sitter_node.start_point[1]
                 
                 header_text = node.text[lo-offset+1:hi-offset]
                 missing_index = header_text.replace(' ', '').split(';').index('')

@@ -17,6 +17,9 @@ class AssignmentOperator(str, Enum):
     ASSIGN_DIVISION = "/="
     ASSIGN_MODULO = "%="
 
+    def __str__(self):
+        return self.value
+
 class AssignmentOperation(Expression):
     def __init__(
         self,
