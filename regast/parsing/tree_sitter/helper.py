@@ -5,8 +5,8 @@ from regast.core.expressions.struct_expression import StructArguments
 from regast.core.variables.parameter import Parameter
 from regast.exceptions import ParsingException
 from regast.parsing.ast_node import ASTNode
-import regast.parsing.expressions as parsing_expressions
-import regast.parsing.variables as parsing_variables
+import regast.parsing.tree_sitter.expressions as parsing_expressions
+import regast.parsing.tree_sitter.variables as parsing_variables
 
 def extract_typed_nodes_between_brackets(
     node: ASTNode,

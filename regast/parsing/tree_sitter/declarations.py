@@ -1,4 +1,5 @@
 from typing import Union
+
 from regast.core.common import StateMutability, Visibility
 from regast.core.declarations.contracts.contract import Contract, InheritanceSpecifier
 from regast.core.declarations.contracts.interface import Interface
@@ -18,12 +19,12 @@ from regast.core.declarations.source_unit import SourceUnit
 from regast.core.declarations.struct import Struct
 from regast.core.declarations.type_definition import TypeDefinition
 from regast.exceptions import ParsingException
-from regast.parsing.expressions import ExpressionParser
-from regast.parsing.helper import extract_call_arguments, extract_parameters, extract_typed_nodes_between_brackets
-from regast.parsing.statements import StatementParser
 from regast.parsing.ast_node import ASTNode
-from regast.parsing.types import TypeParser
-from regast.parsing.variables import VariableParser
+from regast.parsing.tree_sitter.expressions import ExpressionParser
+from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_parameters, extract_typed_nodes_between_brackets
+from regast.parsing.tree_sitter.statements import StatementParser
+from regast.parsing.tree_sitter.types import TypeParser
+from regast.parsing.tree_sitter.variables import VariableParser
 
 
 class DeclarationParser:
