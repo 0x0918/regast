@@ -3,37 +3,33 @@ from regast.core.common import StateMutability, Visibility
 
 from regast.core.types.type import Type
 from regast.core.variables.function_type_variable import FunctionTypeVariable
+from regast.core.variables.parameter import Parameter
+from regast.parsing.ast_node import ASTNode
 
 class FunctionType(Type):
-    def __init__(
-        self,
-        parameters: List[FunctionTypeVariable],
-        return_parameters: List[FunctionTypeVariable],
-        visibility: Optional[Visibility] = None,
-        state_mutability: Optional[StateMutability] = None,        
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._parameters: List[FunctionTypeVariable] = parameters
-        self._return_parameters: List[FunctionTypeVariable] = return_parameters
-        self._visibility: Optional[Visibility] = visibility
-        self._state_mutability: Optional[StateMutability] = state_mutability
+        self._parameters: List[Parameter] = []
+        self._return_parameters: List[FunctionTypeVariable] = []
+        self._visibility: Optional[Visibility] = None
+        self._mutability: Optional[StateMutability] = None
 
     @property
-    def parameters(self) -> List[FunctionTypeVariable]:
+    def parameters(self) -> List[Parameter]:
         return list(self._parameters)
 
     @property
     def return_parameters(self) -> List[FunctionTypeVariable]:
-        return list(self.return_parameters)
+        return list(self._return_parameters)
 
     @property
     def visibility(self) -> Optional[Visibility]:
         return self._visibility
 
     @property                
-    def state_mutability(self) -> Optional[StateMutability]:
-        return self._state_mutability
+    def mutability(self) -> Optional[StateMutability]:
+        return self._mutability
 
     @property
     def storage_size(self) -> Tuple[int, bool]:
@@ -46,17 +42,17 @@ class FunctionType(Type):
     def __str__(self):
         s = 'function'
         if self.parameters:
-            s += ' (' + ', '.join([str(x) for x in self.parameters]) + ')'
+            s += '(' + ', '.join([str(x) for x in self.parameters]) + ')'
         if self.visibility:
             s += ' ' + self.visibility.value
-        if self.state_mutability:
-            s += ' ' + self.state_mutability.value
+        if self.mutability:
+            s += ' ' + self.mutability.value
         if self.return_parameters:
-            s += ' (' + ', '.join([str(x) for x in self.return_parameters]) + ')'
+            s += ' returns (' + ', '.join([str(x) for x in self.return_parameters]) + ')'
         return s
 
     def __eq__(self, other):
         if isinstance(other, FunctionType):
-            return self.parameters == other.parameters and self.return_parameters == other.return_parameters and self.visibility == other.visibility and other.state_mutability == other.state_mutability
+            return self.parameters == other.parameters and self.return_parameters == other.return_parameters and self.visibility == other.visibility and other.mutability == other.mutability
         return False
         

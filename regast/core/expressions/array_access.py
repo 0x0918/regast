@@ -20,7 +20,7 @@ class ArrayAccess(Expression):
 
     @property
     def children(self) -> List:
-        return [self.object] + [self.index] if self.index else []
+        return [self.object] + ([self.index] if self.index else [])
 
     @property
     def __str__(self):

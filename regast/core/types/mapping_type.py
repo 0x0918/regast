@@ -3,17 +3,14 @@ from typing import List, Tuple, Union
 from regast.core.types.elementary_type import ElementaryType
 from regast.core.types.type import Type
 from regast.core.types.user_defined_type import UserDefinedType
+from regast.parsing.ast_node import ASTNode
 
 class MappingType(Type):
-    def __init__(
-        self,
-        key_type: Union[ElementaryType, UserDefinedType],
-        value_type: Type
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._key_type: Union[ElementaryType, UserDefinedType] = key_type
-        self._value_type: Type = value_type
+        self._key_type: Union[ElementaryType, UserDefinedType] = None
+        self._value_type: Type = None
 
     @property
     def key_type(self) -> Union[ElementaryType, UserDefinedType]:

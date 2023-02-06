@@ -74,7 +74,8 @@ class DeclarationParser:
                     source_unit._enums.append(enum)
 
                 case 'function_definition':
-                    function = DeclarationParser.parse_function_definition(child_node)
+                    function = DeclarationParser.parse_functions(child_node)
+                    assert isinstance(function, Function)
                     source_unit._functions.append(function)
 
                 case 'constant_variable_declaration':

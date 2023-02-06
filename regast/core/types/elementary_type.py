@@ -3,6 +3,7 @@ from typing import Tuple
 
 from regast.exceptions import RegastException
 from regast.core.types.type import Type
+from regast.parsing.ast_node import ASTNode
 
 Int = [
     "int",
@@ -146,23 +147,11 @@ class NonElementaryType(Exception):
     pass
 
 class ElementaryType(Type):
-    def __init__(
-        self,
-        t: str
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        if t not in ElementaryTypeName:
-            raise NonElementaryType(f"Failed to parse ElementaryType: {t}")
-    
-        if t == "uint":
-            t = "uint256"
-        elif t == "int":
-            t = "int256"
-        elif t == "byte":
-            t = "bytes1"
-
-        self._type: str = t
+        self._type: str = None
+        self._payable: bool = False
 
     @property
     def is_dynamic(self) -> bool:
@@ -204,7 +193,7 @@ class ElementaryType(Type):
 
     @property
     def is_payable(self) -> bool:
-        return self.__type == "address payable"
+        return self._payable
 
     @property
     def min(self) -> int:
@@ -219,7 +208,7 @@ class ElementaryType(Type):
         raise RegastException(f"{self.name} does not have a max value")
 
     def __str__(self):
-        return self._type
+        return self.type + ('payable' if self.is_payable else '')
 
     def __eq__(self, other):
         if isinstance(other, str):

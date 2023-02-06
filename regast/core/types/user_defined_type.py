@@ -2,15 +2,13 @@ from typing import List
 
 from regast.core.expressions.identifier import Identifier
 from regast.core.types.type import Type
+from regast.parsing.ast_node import ASTNode
 
 class UserDefinedType(Type):
-    def __init__(
-        self,
-        identifiers: List[Identifier],
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._identifiers: List[Identifier] = identifiers
+        self._identifiers: List[Identifier] = []
 
     @property
     def type(self) -> str:

@@ -20,7 +20,7 @@ class PayableConversionExpression(Expression):
 
     @property
     def children(self) -> List:
-        return self.arguments + [self.struct_arguments] if self.struct_arguments else []
+        return self.arguments + ([self.struct_arguments] if self.struct_arguments else [])
 
     def __str__(self):
         s = 'payable'

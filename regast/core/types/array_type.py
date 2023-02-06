@@ -2,17 +2,14 @@ from typing import List, Optional, Tuple
 
 from regast.core.types.type import Type
 from regast.core.expressions.expression import Expression
+from regast.parsing.ast_node import ASTNode
 
 class ArrayType(Type):
-    def __init__(
-        self,
-        type: Type,
-        expression: Optional[Expression] = None
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._type: Type = type
-        self._expression: Optional[Expression] = expression
+        self._type: Type = None
+        self._expression: Optional[Expression] = None
         
     @property
     def type(self) -> Type:
