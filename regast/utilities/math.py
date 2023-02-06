@@ -30,11 +30,9 @@ def convert_string_to_fraction(val: Union[str, int]) -> Fraction:
     return Fraction(val)
 
 
-def convert_subdenomination(
-    value: str, sub: str
-) -> int:  # pylint: disable=too-many-return-statements
-
+def convert_subdenomination(value: str, sub: str) -> int:
     decimal_value = convert_string_to_fraction(value)
+    
     if sub == "wei":
         return int(decimal_value)
     if sub == "gwei":

@@ -2,17 +2,14 @@ from typing import List
 
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.identifier import Identifier
+from regast.parsing.ast_node import ASTNode
 
 class MemberAccess(Expression):
-    def __init__(
-        self,
-        object: Expression,
-        member: Identifier,
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._object: Expression = object
-        self._member: Identifier = member
+        self._object: Expression = None
+        self._member: Identifier = None
 
     @property
     def object(self) -> Expression:
@@ -24,7 +21,7 @@ class MemberAccess(Expression):
 
     @property
     def children(self) -> List:
-        return [self.object + self.member]
+        return [self.object, self.member]
 
     def __str__(self):
         return str(self.object) + "." + str(self.member)

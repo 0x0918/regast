@@ -1,42 +1,43 @@
 from typing import List
 
 from regast.core.expressions.expression import Expression
+from regast.parsing.ast_node import ASTNode
 
 class ConditionalExpression(Expression):
-    def __init__(
-        self,
-        expressions: List[Expression]
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        """
+        <condition> ? <true_expression> : <false_expression>
+        """
+        super().__init__(node)
 
-        assert len(expressions) == 3
-
-        self._expressions: List[Expression] = expressions
-
-    @property
-    def expressions(self) -> Expression:
-        return self._expressions
-
+        self._condition: Expression = None
+        self._true_expression: Expression = None
+        self._false_expression: Expression = None
+    
     @property
     def condition(self) -> Expression:
-        return self._expressions[0]
+        return self._condition
 
     @property
     def true_expression(self) -> Expression:
-        return self._expressions[1]
+        return self._true_expression
 
     @property
     def false_expression(self) -> Expression:
-        return self._expressions[2]
-        
+        return self._false_expression
+
     @property
     def children(self) -> List:
-        return self.expressions
+        return [self.condition, self.true_expression, self.false_expression]
 
     def __str__(self):
-        return str(self.condition) + " ? " + str(self.true_expression) + " : " + str(self.false_expression)
+        return f'{self.condition} ? {self.true_expression} : {self.false_expression}'
 
     def __eq__(self, other):
         if isinstance(other, ConditionalExpression):
-            return self.expressions == other.expressions
+            return (
+                self.condition == other.condition and 
+                self.true_expression == other.true_expression and 
+                self.false_expression == other.false_expression
+            )
         return False

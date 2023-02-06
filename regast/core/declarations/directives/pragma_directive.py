@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 from regast.core.core import Core
 from regast.core.expressions.identifier import Identifier
 from regast.parsing.ast_node import ASTNode
@@ -7,11 +7,11 @@ class Pragma(Core):
     def __init__(self, node: ASTNode):
         super().__init__(node)
         
-        self._name: Identifier = None
+        self._name: Union[Identifier, str] = None
         self._value: str = None
 
     @property
-    def name(self) -> Identifier:
+    def name(self) -> Union[Identifier, str]:
         return self._name
     
     @property
@@ -32,7 +32,7 @@ class Pragma(Core):
 
     @property
     def children(self) -> List:
-        return [self.name]
+        return [self.name] if isinstance(self.name, Identifier) else []
 
     def __eq__(self, other):
         if isinstance(other, Pragma):

@@ -1,14 +1,13 @@
 from regast.core.expressions.expression import Expression
+from regast.parsing.ast_node import ASTNode
 
 class Identifier(Expression):
-    def __init__(self, text: str):
-        super().__init__()
-
-        self._text: str = text
-    
     @property
     def text(self):
-        return self._text
+        return self.ast_node.text
+
+    def __hash__(self):
+        return hash(self.text)
 
     def __str__(self):
         return self.text

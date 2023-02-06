@@ -8,16 +8,16 @@ from regast.parsing.ast_node import ASTNode
 import regast.parsing.tree_sitter.expressions as parsing_expressions
 import regast.parsing.tree_sitter.variables as parsing_variables
 
-def extract_typed_nodes_between_brackets(
+def extract_nodes_between_brackets(
     node: ASTNode,
-    node_type: str,
     open_bracket: str,
     close_bracket: str,
     comma_separated: bool = True,
-    parsing_function: Callable = lambda node: node,
+    node_type: Optional[str] = None,
+    parsing_function: Optional[Callable] = None,
 ) -> Tuple[List[ASTNode], List[ASTNode]]:
     """
-    Iterates through child nodes of `node` and parses child nodes of `node_type` between `open_bracket` and `close_bracket`.
+    Iterate through child nodes of `node` and parse child nodes of `node_type` between `open_bracket` and `close_bracket`.
     """
     try:
         open_bracket_index = node.children_types.index(open_bracket)
@@ -30,19 +30,21 @@ def extract_typed_nodes_between_brackets(
 
     parsed_nodes = []
     for child_node in between_nodes:
-        if child_node.type == node_type:
-            parsed_nodes.append(parsing_function(child_node))
-        elif not (
-            child_node.type in [open_bracket, close_bracket] or 
-            (comma_separated and child_node.type == ',')
-        ):
-            raise ParsingException(f'Unknown tree-sitter node type while parsing {node.type}: {child_node.type}')
+        if child_node.type in [open_bracket, close_bracket] or comma_separated and child_node.type == ',':
+            continue
+
+        if node_type and child_node.type != node_type:
+            ParsingException(f'Unknown tree-sitter node type while parsing {node.type}: {child_node.type}')
+
+        parsed_node = parsing_function(child_node) if parsing_function else child_node
+        parsed_nodes.append(parsed_node)
 
     return parsed_nodes, remaining_nodes
 
 def extract_call_arguments(node: ASTNode) -> Tuple[List[ASTNode], List[Expression], Optional[StructArguments]]:
-    call_argument_nodes, remaining_nodes = extract_typed_nodes_between_brackets(
-        node, 'call_argument', '(', ')'
+    call_argument_nodes, remaining_nodes = extract_nodes_between_brackets(
+        node, '(', ')',
+        node_type='call_argument',
     )
 
     arguments = []
@@ -65,7 +67,8 @@ def extract_call_arguments(node: ASTNode) -> Tuple[List[ASTNode], List[Expressio
     return arguments, struct_arguments, remaining_nodes
 
 def extract_parameters(node: ASTNode) -> Tuple[List[ASTNode], List[Parameter]]:
-    return extract_typed_nodes_between_brackets(
-        node, 'parameter', '(', ')',
+    return extract_nodes_between_brackets(
+        node, '(', ')',
+        node_type='parameter',
         parsing_function=parsing_variables.VariableParser.parse_parameter
     )

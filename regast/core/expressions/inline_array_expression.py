@@ -1,15 +1,13 @@
 from typing import List
 
 from regast.core.expressions.expression import Expression
+from regast.parsing.ast_node import ASTNode
 
 class InlineArrayExpression(Expression):
-    def __init__(
-        self, 
-        expressions: List[Expression]
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._expressions: List[Expression] = expressions
+        self._expressions: List[Expression] = []
 
     @property
     def expressions(self) -> List[Expression]:
@@ -19,11 +17,9 @@ class InlineArrayExpression(Expression):
     def children(self) -> List:
         return self.expressions
 
-    @property
     def __str__(self):
         return "[" + ", ".join([str(x) for x in self.expressions]) + "]"
     
-    @property
     def __eq__(self, other):
         if isinstance(other, InlineArrayExpression):
             return self.expressions == other.expressions

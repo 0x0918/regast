@@ -21,7 +21,7 @@ from regast.core.declarations.type_definition import TypeDefinition
 from regast.exceptions import ParsingException
 from regast.parsing.ast_node import ASTNode
 from regast.parsing.tree_sitter.expressions import ExpressionParser
-from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_parameters, extract_typed_nodes_between_brackets
+from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_parameters, extract_nodes_between_brackets
 from regast.parsing.tree_sitter.statements import StatementParser
 from regast.parsing.tree_sitter.types import TypeParser
 from regast.parsing.tree_sitter.variables import VariableParser
@@ -304,7 +304,7 @@ class DeclarationParser:
                 solidity, *value = pragma_token.children
                 assert solidity.type == 'solidity'
                 
-                pragma_directive._name = ExpressionParser.parse_identifier(solidity)
+                pragma_directive._name = solidity.text
                 pragma_directive._value = ''.join([x.text for x in value])
 
             case other:
@@ -321,7 +321,7 @@ class DeclarationParser:
 
         using_directive = UsingDirective(node)
 
-        library = ExpressionParser.parse_user_defined_type(type_alias) 
+        library = TypeParser.parse_user_defined_type(type_alias) 
         using_directive._libraries.append(library)
         
         match source.type:
@@ -374,9 +374,10 @@ class DeclarationParser:
         def parse_override_specifier(node: ASTNode):
             assert node.type == 'override_specifier'
 
-            user_defined_types, [override_token] = extract_typed_nodes_between_brackets(
-                node, 'user_defined_type', '(', ')',
-                parsing_function=ExpressionParser.parse_user_defined_type
+            user_defined_types, [override_token] = extract_nodes_between_brackets(
+                node, '(', ')',
+                node_type='user_defined_type',
+                parsing_function=TypeParser.parse_user_defined_type
             )
             assert override_token.type == 'override'
             
@@ -437,8 +438,9 @@ class DeclarationParser:
     def parse_error_declaration(node) -> CustomError:
         assert node.type == 'error_declaration'
 
-        error_parameters, [error_token, name] = extract_typed_nodes_between_brackets(
-            node, 'error_parameter', '(', ')',
+        error_parameters, [error_token, name] = extract_nodes_between_brackets(
+            node, '(', ')',
+            node_type='error_parameter',
             parsing_function=VariableParser.parse_error_parameter
         )
         assert error_token.type == 'error' and name.type == 'identifier'
@@ -453,8 +455,9 @@ class DeclarationParser:
     def parse_enum_declaration(node) -> Enum:
         assert node.type == 'enum_declaration'
 
-        enum_values, [enum_token, name] = extract_typed_nodes_between_brackets(
-            node, 'enum_value', '{', '}',
+        enum_values, [enum_token, name] = extract_nodes_between_brackets(
+            node, '{', '}',
+            node_type='enum_value',
             parsing_function=ExpressionParser.parse_identifier
         )
         assert enum_token.type == 'enum' and name.type == 'identifier'
@@ -469,8 +472,9 @@ class DeclarationParser:
     def parse_struct_declaration(node) -> Struct:
         assert node.type == 'struct_declaration'
 
-        struct_members, [struct_token, name] = extract_typed_nodes_between_brackets(
-            node, 'struct_member', '{', '}',
+        struct_members, [struct_token, name] = extract_nodes_between_brackets(
+            node, '{', '}',
+            node_type='struct_member',
             comma_separated=False,
             parsing_function=VariableParser.parse_struct_member
         )
@@ -486,8 +490,9 @@ class DeclarationParser:
     def parse_event_definition(node) -> Event:
         assert node.type == 'event_definition'
 
-        event_parameters, [event_token, name, *anonymous_token] = extract_typed_nodes_between_brackets(
-            node, 'event_paramater', '(', ')',
+        event_parameters, [event_token, name, *anonymous_token] = extract_nodes_between_brackets(
+            node, '(', ')',
+            node_type='event_paramater',
             parsing_function=VariableParser.parse_event_parameter
         )
         assert event_token.type == 'event' and name.type == 'identifier'

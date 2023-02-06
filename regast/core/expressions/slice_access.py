@@ -1,19 +1,15 @@
 from typing import List, Optional
 
 from regast.core.expressions.expression import Expression
+from regast.parsing.ast_node import ASTNode
 
 class SliceAccess(Expression):
-    def __init__(
-        self, 
-        object: Expression,
-        start: Optional[Expression] = None,
-        stop: Optional[Expression] = None,
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._object: Expression = object
-        self._start: Optional[Expression] = start
-        self._stop: Optional[Expression] = stop
+        self._object: Expression = None
+        self._start: Optional[Expression] = None
+        self._stop: Optional[Expression] = None
 
     @property
     def object(self) -> Expression:
