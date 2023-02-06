@@ -27,13 +27,11 @@ class SliceAccess(Expression):
     def children(self) -> List:
         return [self.object] + [x for x in [self.start, self.stop] if x] 
 
-    @property
     def __str__(self):
         start = str(self.start) if self.start else ""
         stop = str(self.stop) if self.stop else ""
         return str(self.object) + "[" + start + ":" + stop + "]"
     
-    @property
     def __eq__(self, other):
         if isinstance(other, SliceAccess):
             return self.object == other.object and self.start == other.start and self.stop == other.stop

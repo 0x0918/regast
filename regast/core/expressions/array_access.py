@@ -22,12 +22,10 @@ class ArrayAccess(Expression):
     def children(self) -> List:
         return [self.object] + ([self.index] if self.index else [])
 
-    @property
     def __str__(self):
         index_str = str(self.index) if self.index else ''
         return str(self.object) + "[" + index_str + "]"
     
-    @property
     def __eq__(self, other):
         if isinstance(other, ArrayAccess):
             return self.object == other.object and self.index == other.index

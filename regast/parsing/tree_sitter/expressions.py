@@ -85,10 +85,8 @@ class ExpressionParser:
 
         binary_operation = BinaryOperation(node)
         binary_operation._operator = BinaryOperator(operator.text)
-        binary_operation._expressions = [
-            ExpressionParser.parse_expression(left),
-            ExpressionParser.parse_expression(right)
-        ]
+        binary_operation._left_expression = ExpressionParser.parse_expression(left)
+        binary_operation._right_expression = ExpressionParser.parse_expression(right)
 
         return binary_operation
 
@@ -247,16 +245,18 @@ class ExpressionParser:
     def parse_member_expression(node) -> MemberAccess:
         assert node.type == 'member_expression'
 
-        object_or_expression, period_token, property = node.children
-        assert period_token.type == '.' and property.type == 'identifier'
+        object_or_expression, period_token, member = node.children
+        assert period_token.type == '.' and member.type == 'identifier'
 
         member_access = MemberAccess(node)
-        member_access._member = ExpressionParser.parse_identifier(property)
+        member_access._member = ExpressionParser.parse_identifier(member)
         
         if object_or_expression.type == 'identifier':
             member_access._object = ExpressionParser.parse_identifier(object_or_expression)
         else:
             member_access._object = ExpressionParser.parse_expression(object_or_expression)
+
+        print(member_access)
 
         return member_access
 
