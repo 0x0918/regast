@@ -5,6 +5,7 @@ from regast.core.core import Core
 from regast.core.expressions.expression import Expression
 from regast.core.expressions.identifier import Identifier
 from regast.core.types.type import Type
+from regast.parsing.ast_node import ASTNode
 
 class DataLocation(str, Enum):
     MEMORY = 'memory'
@@ -15,19 +16,13 @@ class DataLocation(str, Enum):
         return self.value
 
 class Variable(Core):
-    def __init__(
-        self, 
-        type: Type,
-        name: Optional[Identifier] = None,
-        data_location: Optional[DataLocation] = None,
-        expression: Optional[Expression] = None
-    ):
-        super().__init__()
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._type: Type = type
-        self._name: Optional[Identifier] = name
-        self._data_location: Optional[DataLocation] = data_location
-        self._expression: Optional[Expression] = expression
+        self._type: Type = None
+        self._name: Optional[Identifier] = None
+        self._data_location: Optional[DataLocation] = None
+        self._expression: Optional[Expression] = None
 
     @property
     def type(self) -> Type:

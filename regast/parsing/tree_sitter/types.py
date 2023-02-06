@@ -1,14 +1,13 @@
+import regast.parsing.tree_sitter.expressions as expressions
+import regast.parsing.tree_sitter.variables as variables
 from regast.core.common import StateMutability, Visibility
 from regast.core.types.array_type import ArrayType
 from regast.core.types.function_type import FunctionType
 from regast.core.types.mapping_type import MappingType
-import regast.parsing.tree_sitter.expressions as expressions
 from regast.core.types.elementary_type import ElementaryType, ElementaryTypeName, NonElementaryType
 from regast.core.types.type import Type
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.exceptions import ParsingException
-from regast.parsing.tree_sitter.helper import extract_nodes_between_brackets, extract_parameters
-from regast.parsing.tree_sitter.variables import VariableParser
 
 
 class TypeParser:
@@ -127,11 +126,12 @@ class TypeParser:
         for child_node in node.children:
             match child_node.type:
                 case 'parameter':
-                    parameter = VariableParser.parse_parameter(child_node)
-                    function_type._parameters.append(parameter)
+                    parameter = variables.VariableParser.parse_parameter(child_node)
+                    function_type_variable = variables.VariableParser.convert_parameter_to_function_type_variable(parameter)
+                    function_type._parameters.append(function_type_variable)
                     
                 case 'return_parameter':
-                    return_parameter = VariableParser.parse_function_type_variable(child_node)
+                    return_parameter = variables.VariableParser.parse_function_type_variable(child_node)
                     function_type._return_parameters.append(return_parameter)
                     
                 case 'visibility':

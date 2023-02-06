@@ -2,11 +2,9 @@ from enum import Enum
 from typing import List, Optional
 
 from regast.core.common import Visibility
-from regast.core.expressions.expression import Expression
-from regast.core.expressions.identifier import Identifier
-from regast.core.types.type import Type
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.variable import Variable
+from regast.parsing.ast_node import ASTNode
 
 class StateVariableMutability(str, Enum):
     MUTABLE = ''
@@ -17,24 +15,13 @@ class StateVariableMutability(str, Enum):
         return self.value
 
 class StateVariable(Variable):
-    def __init__(
-        self, 
-        type: Type,
-        name: Identifier,
-        visibility: Optional[Visibility] = None,
-        mutability: Optional[StateVariableMutability] = None,
-        overrides: List[UserDefinedType] = [],
-        initial_expression: Optional[Expression] = None
-    ):
-        super().__init__(
-            type,
-            name=name,
-            expression=initial_expression
-        )
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._visibility: Optional[Visibility] = visibility
-        self._mutability: Optional[StateVariableMutability] = mutability
-        self._overrides: List[UserDefinedType] = overrides
+        self._visibility: Optional[Visibility] = None
+        self._mutability: Optional[StateVariableMutability] = None
+        self._override: bool = False
+        self._overrides: List[UserDefinedType] = []
 
     @property    
     def visibility(self) -> Visibility:
@@ -60,6 +47,10 @@ class StateVariable(Variable):
         return self._mutability
 
     @property
+    def is_override(self) -> bool:
+        return self._override
+
+    @property
     def overrides(self) -> List[UserDefinedType]:
         return list(self._overrides)
 
@@ -75,9 +66,10 @@ class StateVariable(Variable):
             s += " " + self.mutability.value
         if self.overrides:
             s += " override (" + ", ".join([str(x) for x in self.overrides]) + ")"
-        s += str(self.name)
+        s += ' ' + str(self.name)
         if self.is_initialized:
             s += " = " + str(self.initial_expression)    
+        return s
 
     def __eq__(self, other):
         if isinstance(other, StateVariable):

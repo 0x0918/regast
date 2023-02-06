@@ -1,19 +1,11 @@
-from typing import List, Optional
-from regast.core.expressions.identifier import Identifier
-
 from regast.core.variables.variable import Variable
-from regast.core.types.type import Type
+from regast.parsing.ast_node import ASTNode
 
 class EventParameter(Variable):
-    def __init__(
-        self, 
-        type: Type,
-        indexed: bool = False,
-        name: Optional[Identifier] = None
-    ):
-        super().__init__(type, name=name)
+    def __init__(self, node: ASTNode):
+        super().__init__(node)
 
-        self._indexed = indexed
+        self._indexed: bool = False
 
     @property
     def is_indexed(self) -> bool:

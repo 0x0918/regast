@@ -3,20 +3,19 @@ from regast.core.common import StateMutability, Visibility
 
 from regast.core.types.type import Type
 from regast.core.variables.function_type_variable import FunctionTypeVariable
-from regast.core.variables.parameter import Parameter
 from regast.parsing.ast_node import ASTNode
 
 class FunctionType(Type):
     def __init__(self, node: ASTNode):
         super().__init__(node)
 
-        self._parameters: List[Parameter] = []
+        self._parameters: List[FunctionTypeVariable] = []
         self._return_parameters: List[FunctionTypeVariable] = []
         self._visibility: Optional[Visibility] = None
         self._mutability: Optional[StateMutability] = None
 
     @property
-    def parameters(self) -> List[Parameter]:
+    def parameters(self) -> List[FunctionTypeVariable]:
         return list(self._parameters)
 
     @property

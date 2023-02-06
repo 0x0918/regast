@@ -372,19 +372,6 @@ class DeclarationParser:
 
             function._modifiers.append(modifier_invocation)
 
-        def parse_override_specifier(node: ASTNode):
-            assert node.type == 'override_specifier'
-
-            user_defined_types, [override_token] = extract_nodes_between_brackets(
-                node, '(', ')',
-                node_type='user_defined_type',
-                parsing_function=TypeParser.parse_user_defined_type
-            )
-            assert override_token.type == 'override'
-            
-            function._override = True
-            function._overrides.extend(user_defined_types)
-
         def parse_return_type_definition(node: ASTNode):
             assert node.type == 'return_type_definition'
 
@@ -418,7 +405,9 @@ class DeclarationParser:
                     function._virtual = True
 
                 case 'override_specifier':
-                    parse_override_specifier(child_node)
+                    assert not function._overrides
+                    function._override = True
+                    function._overrides = VariableParser.parse_override_specifier(child_node)
 
                 case 'return_type_definition':
                     parse_return_type_definition(child_node)
