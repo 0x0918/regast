@@ -1,4 +1,7 @@
 from typing import List
+import regast.parsing.tree_sitter.expressions as expressions
+import regast.parsing.tree_sitter.helper as helper
+import regast.parsing.tree_sitter.types as types
 from regast.core.common import Visibility
 from regast.core.types.user_defined_type import UserDefinedType
 from regast.core.variables.error_parameter import ErrorParameter
@@ -10,9 +13,6 @@ from regast.core.variables.struct_member import StructMember
 from regast.core.variables.variable import DataLocation
 from regast.exceptions import ParsingException
 from regast.parsing.ast_node import ASTNode
-import regast.parsing.tree_sitter.expressions as expressions
-import regast.parsing.tree_sitter.helper as helper
-import regast.parsing.tree_sitter.types as types
 from regast.core.variables.constant import Constant
 
 
