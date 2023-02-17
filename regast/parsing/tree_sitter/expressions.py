@@ -256,8 +256,6 @@ class ExpressionParser:
         else:
             member_access._object = ExpressionParser.parse_expression(object_or_expression)
 
-        print(member_access)
-
         return member_access
 
     @staticmethod

@@ -159,11 +159,11 @@ class VariableParser:
         type_name = name = None
         remaining_nodes = []
         match node.children_types:
-            case ['type_name', *_, 'identifier']:
-                type_name, *remaining_nodes, name = node.children
             case ['type_name', *_, 'identifier', '=', _]:
                 type_name, *remaining_nodes, name, _, expression = node.children
                 state_variable._expression = expressions.ExpressionParser.parse_expression(expression)
+            case ['type_name', *_, 'identifier']:
+                type_name, *remaining_nodes, name = node.children
             case _:
                 raise ParsingException(f'Unable to parse state_variable_declaration {node.text}')
 

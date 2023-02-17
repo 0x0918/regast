@@ -59,10 +59,8 @@ def extract_call_arguments(node: ASTNode) -> Tuple[List[ASTNode], List[Expressio
             case StructArguments():
                 assert not struct_arguments
                 struct_arguments = call_argument
-            # case _:
-            #     raise ParsingException(f'Unknown resulting argument from call_argument: {node.text}')
-
-        #TODO Implement expression parser and uncomment the exception above
+            case _:
+                raise ParsingException(f'Unknown resulting argument from call_argument: {node.text}')
 
     return arguments, struct_arguments, remaining_nodes
 

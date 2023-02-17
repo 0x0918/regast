@@ -27,7 +27,6 @@ class TypeParser:
             case ['function', *_]:
                 return TypeParser.parse_function_type(node)
         
-        print(node.children_types)
         raise ParsingException(f'Unknown tree-sitter node type for type_name: {node.text}')
     
     @staticmethod

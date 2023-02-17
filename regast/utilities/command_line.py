@@ -1,15 +1,16 @@
 import argparse
-import glob
 import os
+from pathlib import Path
 from typing import Dict, List
 
 
 def parse_argument_contract(contract_path: str) -> List[str]:
     if not os.path.exists(contract_path):
         raise Exception(f'[!] File or directory {contract_path} does not exist.')
+    
 
     if os.path.isdir(contract_path):
-        files = glob.glob('**/*.sol', recursive=True)
+        files = [p for p in Path(contract_path).rglob('*.sol')]
         if not files:
             raise Exception(f'[!] Directory {contract_path} is empty.')
         return files

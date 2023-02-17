@@ -171,11 +171,9 @@ class DeclarationParser:
                         elif isinstance(f, ReceiveFunction):
                             assert not contract.receive_function
                             contract._receive_function = f
-                        # else:
-                            # raise ParsingException(f'Unknown resulting fallback_receive_definition: {child_node.text}')
+                        else:
+                            raise ParsingException(f'Unknown resulting fallback_receive_definition: {child_node.text}')
 
-                        # TODO Implement fallback_receive_definition and uncomment the exception above
-                            
                     case 'user_defined_type_definition':
                         type_definition = DeclarationParser.parse_user_defined_type_definition(child_node)
                         contract._type_definitions.append(type_definition)
