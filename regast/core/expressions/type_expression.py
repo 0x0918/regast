@@ -15,10 +15,10 @@ class TypeExpression(Expression):
 
     @property
     def children(self) -> List:
-        return self.type
+        return [self.type]
 
     def __str__(self):
-        return "type(" + str(type) + ")"
+        return "type(" + str(self.type) + ")"
 
     def __eq__(self, other):
         if isinstance(other, TypeExpression):

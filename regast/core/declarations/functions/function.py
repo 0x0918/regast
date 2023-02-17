@@ -32,7 +32,7 @@ class ModifierInvocation(Core):
 
     @property
     def children(self) -> List:
-        children = [self.name] + self.arguments
+        children = self._identifiers + self.arguments
         if self.struct_arguments:
             children.append(self.struct_arguments)
         return children
@@ -116,10 +116,13 @@ class Function(FunctionBody):
 
     @property
     def children(self) -> List:
-        children = [self.name]
-        children += self.parameters, self.return_parameters
+        children = self.parameters + self.return_parameters
         children += self.modifiers
         children += self.overrides
+        if self.name:
+            children.append(self.name)
+        if self.body:
+            children.append(self.body)
         return children
 
     def __eq__(self, other):

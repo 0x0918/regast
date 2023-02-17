@@ -30,5 +30,5 @@ class Parser:
         except Exception as e:
             raise ParsingException(f"Failed to parse {fname}, throws: {e}")
 
-        root_node = ASTNode(tree_sitter_tree.root_node)
+        root_node = ASTNode(fname, tree_sitter_tree.root_node)
         self.fname_to_source_unit[fname] = DeclarationParser.parse_source_unit(root_node, fname)

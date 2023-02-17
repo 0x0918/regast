@@ -35,7 +35,7 @@ class ArrayType(Type):
     def children(self) -> List:
         if self.length:
             return [self.type, self.length]
-        return self.type
+        return [self.type]
 
     def __str__(self):
         if self.length:

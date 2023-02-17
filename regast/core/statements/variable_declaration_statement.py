@@ -30,10 +30,7 @@ class VariableDeclaration(Core):
 
     @property
     def children(self) -> List:
-        children = [self.type, self.name]
-        if self.data_location:
-            children.append(self.data_location)
-        return children
+        return [self.type, self.name]
 
     def __eq__(self, other):
         if isinstance(other, VariableDeclaration):

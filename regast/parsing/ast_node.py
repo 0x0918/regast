@@ -1,13 +1,16 @@
 from typing import Dict, List, Optional
 from collections import defaultdict
 
+import tree_sitter
+
 from regast.core.others.comment import Comment
 from regast.core.others.parse_error import ParseError
 
 
 class ASTNode:
-    def __init__(self, node):
-        self._tree_sitter_node = node
+    def __init__(self, fname: str, node: tree_sitter.Node):
+        self._fname: str = fname
+        self._tree_sitter_node: tree_sitter.Node = node
 
         self._children: List[ASTNode] = []
         self._children_types: List[str] = []
@@ -19,7 +22,11 @@ class ASTNode:
         self.parse_underlying_node(node)
         
     @property
-    def tree_sitter_node(self):
+    def fname(self) -> str:
+        return self._fname
+
+    @property
+    def tree_sitter_node(self) -> tree_sitter.Node:
         return self._tree_sitter_node
 
     @property
@@ -65,7 +72,7 @@ class ASTNode:
                 case other:
                     self._children_types.append(other)
 
-                    child = ASTNode(child_node)
+                    child = ASTNode(self.fname, child_node)
                     self._children.append(child)
                     self._comments.extend(child.comments)
                     self._parse_errors.extend(child.parse_errors)

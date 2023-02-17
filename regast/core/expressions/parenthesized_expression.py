@@ -14,7 +14,7 @@ class ParenthesizedExpression(Expression):
 
     @property
     def children(self) -> List:
-        return self.expression
+        return [self.expression]
 
     def __str__(self):
         return '(' + str(self.expression) + ')'

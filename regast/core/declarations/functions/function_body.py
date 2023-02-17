@@ -13,8 +13,4 @@ class FunctionBody(Core):
     def body(self) -> Optional[Block]:
         return self._body
 
-    @property
-    def children(self) -> List:
-        return [self.body] if self.body else []
-
 # TODO Implement additional functionality here (eg. local variables, return statements, require statements)

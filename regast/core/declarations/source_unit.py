@@ -105,7 +105,7 @@ class SourceUnit(Core):
         children = self.pragma_directives
         children += self.import_directives
         children += self.using_directives
-        children += self.contracts
+        children += self.all_contracts
         children += self.enums
         children += self.structs
         children += self.functions
@@ -120,7 +120,7 @@ class SourceUnit(Core):
                 self.pragma_directives == other.pragma_directives and
                 self.import_directives == other.import_directives and
                 self.using_directives == other.using_directives and
-                self.contracts == other.contracts and
+                self.all_contracts == other.all_contracts and
                 self.enums == other.enums and
                 self.structs == other.structs and
                 self.functions == other.functions and

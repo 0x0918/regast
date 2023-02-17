@@ -29,8 +29,8 @@ class InheritanceSpecifier(Core):
         self._arguments: List[Expression] = []
 
     @property
-    def name(self) -> str:
-        return ".".join([str(x) for x in self.identifiers])
+    def name(self) -> UserDefinedType:
+        return self._name
 
     @property
     def struct_arguments(self) -> Optional[StructArguments]:

@@ -21,14 +21,23 @@ class Regast:
             self.parser.parse(fname)
         
     def register_detector(self, detector_class: Detector):
-        instance = detector_class(self)
+        instance = detector_class(self.parser)
         self._detectors.append(instance)
 
-    def run_detectors(self) -> Dict[DetectorClassification, Dict[Detector, List[Result]]]:
-        classification_to_detector_to_results = {c: {} for c in DetectorClassification}
+    def run_detectors(self) -> Dict[DetectorClassification, Dict[Detector, Dict[str, List[Result]]]]:
+        organized_results = {}
+        
         for detector in self._detectors:
             results = detector.detect()
-            if results:
-                classification_to_detector_to_results[detector.CLASSIFICATION][detector] = results
+            
+            for result in results:
+                if detector.CLASSIFICATION not in organized_results:
+                    organized_results[detector.CLASSIFICATION] = {}
+                if detector not in organized_results[detector.CLASSIFICATION]:
+                    organized_results[detector.CLASSIFICATION][detector] = {}
+                if result.fname not in organized_results[detector.CLASSIFICATION][detector]:
+                    organized_results[detector.CLASSIFICATION][detector][result.fname] = []
+                organized_results[detector.CLASSIFICATION][detector][result.fname].append(result)
 
-        return classification_to_detector_to_results
+        return organized_results
+        

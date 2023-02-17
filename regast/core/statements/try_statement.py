@@ -63,7 +63,7 @@ class TryStatement(Statement):
 
     @property
     def parameters(self) -> List[Parameter]:
-        return list(self._try_expression)
+        return list(self._parameters)
 
     @property
     def children(self) -> List:

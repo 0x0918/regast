@@ -2,9 +2,10 @@ from typing import List, Union
 
 from regast.parsing.ast_node import ASTNode
 
-
 class Core:
     def __init__(self, node: ASTNode):
+        self.__class__.__hash__ = Core.__hash__
+
         self._ast_node: ASTNode = node 
 
     @property
@@ -15,7 +16,7 @@ class Core:
     def children(self) -> List:
         return []
 
-    def get_instances_of(self, *core_types: List[Union[str, type]]) -> Union[List, List[List]]:
+    def get_instances_of(self, core_type: Union[str, type]) -> List["Core"]:
         """
         TODO
         We can optimize this further by introducing memoization. The function below allows us to get the
@@ -47,26 +48,20 @@ class Core:
         local_variables = a.get_instances_of(LocalVariable)
         local_variables, state_variables = a.get_instances_of(LocalVariable, "StateVariable")
         """
-        instances = [[] for _ in range(len(core_types))]
-        
+        instances = []
+
         for child in self.children:
-            # Check if child matches any of the core types
-            for i in range(len(core_types)):
-                core_type = core_types[i]
-                if child.__class__.__name__ == str(core_type) or isinstance(child, core_type):
-                    instances[i].append(child)
+            # Check if child matches core_type
+
+            if isinstance(child, core_type) or (isinstance(core_type, str) and child.__class__.__name__ == core_type):
+                instances.append(child)
             
             # Recursively do this for children too, and add the results to our current ones
-            child_instances = child.get_instances_of(*core_types)
-            if len(core_types) == 1:            
-                child_instances = [child_instances]
-            instances = [instances[x] + child_instances[x] for x in range(len(core_types))]
+            child_instances = child.get_instances_of(core_type)
+            instances.extend(child_instances)
         
         # Remove duplicates
-        instances = [list(set(x)) for x in instances]         
-
-        # Return a single list if only one core type is specified
-        return instances[0] if len(core_types) == 1 else instances
+        return list(set(instances))
 
     def __hash__(self):
         return hash(self.ast_node)

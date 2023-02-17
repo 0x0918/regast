@@ -1,2 +1,52 @@
+from typing import List
+from regast.parsing.ast_node import ASTNode
+
+
 class Result:
-    pass
+    def __init__(
+        self,
+        fname: str,
+        source: str,
+        start_line: int,
+        end_line: int
+    ):
+        self.fname: str = fname
+        self.source: str = source
+        self.start_line: int = start_line
+        self.end_line: int = end_line
+
+    @staticmethod
+    def from_node(source: str, node: ASTNode) -> "Result":
+        return Result(
+            node.fname,
+            source,
+            node.tree_sitter_node.start_point[0] + 1,
+            node.tree_sitter_node.end_point[0] + 1
+        )
+
+    @staticmethod
+    def from_line(fname: str, source: str, start_line: int, end_line: int) -> "Result":
+        return Result(fname, source, start_line, end_line)
+    
+    @property
+    def is_multiline(self) -> bool:
+        return self.start_line != self.end_line
+
+    @property
+    def code(self) -> str:
+        lines = self.source.splitlines()
+
+        formatted_lines = []
+        for line_number in range(self.start_line - 1, self.end_line):
+            s = str(line_number + 1).rjust(4, ' ') 
+            s += ':' + ' '*4
+            s += lines[line_number]
+            formatted_lines.append(s)
+        
+        return '\n'.join(formatted_lines)
+        
+    
+    def __str__(self):
+        lines = self.source.splitlines()
+        return '\n'.join(lines[self.start_line - 1:self.end_line])
+    

@@ -18,7 +18,7 @@ class NewExpression(Expression):
         return [self.type]
 
     def __str__(self):
-        return "new " + self.type
+        return "new " + str(self.type)
     
     def __eq__(self, other):
         if isinstance(other, NewExpression):

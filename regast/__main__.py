@@ -13,7 +13,7 @@ from regast.utilities.setup_dependencies import initialize_dependencices
 
 
 def get_detectors():
-    return [x[1] for x in inspect.getmembers(all_detectors, inspect.isclass) if issubclass[x[1], Detector]]
+    return [x[1] for x in inspect.getmembers(all_detectors, inspect.isclass) if issubclass(x[1], Detector)]
 
 def get_results_from_ast(
     source_fnames: List[str], 
