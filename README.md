@@ -53,14 +53,7 @@ options:
 ```
 
 ### Detectors
-By default, **regast** runs all included detectors listed [here]().
-
-Using the `--detectors` option, **regast** is also able to run custom-written detectors:
-```sh
-$ regast --detectors <detector> .
-```
-
-More details about writing your own detector can be found [here]().
+For more information about detectors, see [`regast/detectors/README.md`](https://github.com/MiloTruck/regast/tree/main/regast/detectors/README.md).
 
 ## Implementation
 **regast** is built on top of [tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python), which provides Python bindings for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library. The grammar for Solidity is taken from [tree-sitter-solidity](https://github.com/JoranHonig/tree-sitter-solidity).

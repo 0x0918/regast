@@ -11,11 +11,14 @@ class AddressBalance(Detector):
 
     def detect(self) -> List[Result]:
         results = []
-
+        
+        # Iterate through all source units
         for source_unit in self.source_units:
-            member_access_instances = source_unit.get_instances_of(MemberAccess)
+            # Find all instances of member access
+            member_accesses = source_unit.get_instances_of(MemberAccess)
 
-            for member_access in member_access_instances:
+            for member_access in member_accesses:
+                # Filter member access with object "address(this)" and member "balance"
                 if str(member_access.object) == 'address(this)' and str(member_access.member) == 'balance':
                     result = self.generate_result_from_core_object(member_access)
                     results.append(result)

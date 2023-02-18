@@ -1,6 +1,7 @@
 import re
 from enum import Enum
 from typing import Dict, List
+from abc import ABC, abstractmethod
 
 from regast.core.core import Core
 from regast.core.declarations.contracts.contract import Contract
@@ -16,9 +17,20 @@ class DetectorClassification(Enum):
     MEDIUM = 4
     HIGH = 5
 
-class Detector:
-    NAME: str = None
-    CLASSIFICATION: DetectorClassification = None
+class Detector(ABC):
+    @property
+    @abstractmethod
+    def NAME(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def CLASSIFICATION(self) -> DetectorClassification:
+        pass
+
+    @abstractmethod
+    def detect(self) -> List[Result]:
+        pass
 
     def __init__(self, parser: Parser):
         self._fname_to_source_unit: Dict[str, SourceUnit] = parser.fname_to_source_unit
