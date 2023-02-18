@@ -76,6 +76,6 @@ Most of **regast**'s code are in the following directories:
 
 ## Future improvements
 ### Adding support for [crytic-compile](https://github.com/crytic/crytic-compile)
-As **regast** uses `tree-sitter-solidty`, **regast** is limited by its Solidity grammar. This causes **regast** to be unable to parse some Solidity codebases, or newer versions of Solidity. 
+**regast** is limited by the Solidity grammar defined in  `tree-sitter-solidity`, which is not updated frequently. This causes **regast** to be unable to parse some Solidity codebases, or newer versions of Solidity. 
 
 By adding support for parsing using [crytic-compile](https://github.com/crytic/crytic-compile), **regast** would be able to parse more Solidity codebases. However, this method does require code compilation.
