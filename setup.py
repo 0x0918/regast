@@ -8,6 +8,7 @@ setup(
     packages=find_packages(),
     python_requires=">=3.10",
     install_requires=['tree-sitter'],
+    include_package_data=True,
     extra_requires={
         'dev': ['pytest']
     },

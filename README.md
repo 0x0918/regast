@@ -1,7 +1,15 @@
 # regast
 **regast** is a static analyzer for identifying security vulnerabilities and gas optimizations in Solidity codebases.
 
-## Installation
+**regast** parses the abstract syntax trees of Solidity code into Python classes, which can then be used to write detectors for common vulnerability patterns.
+
+**regast** is heavily inspired by tools such as [Slither](https://github.com/crytic/slither) and [solstat](https://github.com/0xKitsune/solstat), but has the following differences:
+* **No compilation:** 
+* **Easily customizable:**
+
+## Usage
+
+### Installation
 **regast** requires Python 3.10 or above.
 
 First, clone this repository and its submodules:
@@ -19,7 +27,7 @@ pip3 install .
 python3 setup.py install
 ```
 
-## Usage
+### Running **regast**
 The `regast` command can be used on either `.sol` file or a folder containing Solidity files:
 ```sh
 $ regast --help
@@ -47,4 +55,4 @@ $ regast --detectors <detector> .
 
 More details about writing your own detector can be found [here]().
 
-### Urmom
+## Implementation
