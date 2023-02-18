@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import importlib.util as import_util
 import inspect
 from typing import Dict, List
 
-from regast.detectors import all_detectors
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 from regast.regast import Regast
@@ -12,19 +12,26 @@ from regast.utilities.output import output_to_stdout
 from regast.utilities.setup_dependencies import initialize_dependencies
 
 
-def get_detectors():
-    return [x[1] for x in inspect.getmembers(all_detectors, inspect.isclass) if issubclass(x[1], Detector)]
+def get_detectors(detector_paths: List[str]) -> List[Detector]:
+    detectors = []
 
-def get_results_from_ast(
-    source_fnames: List[str], 
-    files_in_scope: List[str],
-    remaps: Dict[str, str],
-) -> Dict[DetectorClassification, Dict[Detector, List[Result]]]:
+    for detector_path in detector_paths:
+        spec = import_util.spec_from_file_location('all_detectors', detector_path)
+        module = import_util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        for detector_class in inspect.getmembers(module, inspect.isclass):
+            if issubclass(detector_class[1], Detector) and detector_class[1] != Detector:
+                detectors.append(detector_class[1])
+
+    return detectors
+
+def get_results_from_ast(args) -> Dict[DetectorClassification, Dict[Detector, List[Result]]]:
     # Initialize regast class, which parses ast
-    regast = Regast(source_fnames, files_in_scope, remaps)
+    regast = Regast(args.contract, args.scope)
 
     # Run detectors and filter results
-    for detector in get_detectors():
+    for detector in get_detectors(args.detectors):
         regast.register_detector(detector)
 
     results = regast.run_detectors()
@@ -38,7 +45,7 @@ def main():
     args = handle_arguments()
 
     # Run detectors
-    results = get_results_from_ast(args.contract, args.scope, args.remap)
+    results = get_results_from_ast(args)
 
     # Output results to stdout
     output_to_stdout(results)

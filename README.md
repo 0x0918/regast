@@ -37,18 +37,19 @@ rm -r regast
 The `regast` command can be used on either `.sol` file or a folder containing Solidity files:
 ```sh
 $ regast --help
-usage: regast [-h] [--scope <scope.txt>] [--remap <remappings.txt>] <contract>
+usage: regast [-h] [-s <scope.txt>] [-d <path_to_detector>] <path_to_contract>
 
 Scan for vulnerabilities based on regex or AST queries.
 
 positional arguments:
-  <contract>            Soldiity file or folder to scan
+  <path_to_contract>    Path to .sol file or folder containing .sol files to scan
 
 options:
   -h, --help            show this help message and exit
-  --scope <scope.txt>   Text file containing a list of contracts in scope
-  --remap <remappings.txt>
-                        Text file containing import remappings
+  -s <scope.txt>, --scope <scope.txt>
+                        Text file containing a list of contracts in scope
+  -d <path_to_detector>, --detectors <path_to_detector>
+                        Path to .py file or folder containing .py files which implement detectors
 ```
 
 ### Detectors

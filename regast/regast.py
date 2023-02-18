@@ -9,7 +9,6 @@ class Regast:
         self, 
         fnames: List[str], 
         files_in_scope: List[str],
-        remaps: Dict[str, str],
     ):
         self.fnames: List[str] = fnames
         self.files_in_scope: List[str] = files_in_scope

@@ -1,4 +1,3 @@
-from typing import List
 from regast.parsing.ast_node import ASTNode
 
 
@@ -44,7 +43,6 @@ class Result:
             s += '\n'
         
         return s
-        
     
     def __str__(self):
         lines = self.source.splitlines()

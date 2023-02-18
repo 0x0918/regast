@@ -1,13 +1,13 @@
-from enum import Enum
 import re
+from enum import Enum
 from typing import Dict, List
+
 from regast.core.core import Core
 from regast.core.declarations.contracts.contract import Contract
 from regast.core.declarations.source_unit import SourceUnit
 from regast.detectors.result import Result
-from regast.parsing.ast_node import ASTNode
-
 from regast.parsing.parser import Parser
+
 
 class DetectorClassification(Enum):
     GAS = 1

@@ -1,31 +1,60 @@
 import argparse
 import os
 from pathlib import Path
-from typing import Dict, List
+from typing import List
+
+from regast.utilities.definitions import DETECTORS_PATH
 
 
 def parse_argument_contract(contract_path: str) -> List[str]:
     if not os.path.exists(contract_path):
-        raise Exception(f'[!] File or directory {contract_path} does not exist.')
+        print(f'[!] File or directory {contract_path} does not exist.')
+        exit()
     
-
     if os.path.isdir(contract_path):
         files = [p for p in Path(contract_path).rglob('*.sol')]
         if not files:
-            raise Exception(f'[!] Directory {contract_path} is empty.')
+            print(f'[!] Directory {contract_path} is empty.')
+            exit()
+
         return files
-    else:
-        return [contract_path]
+    
+    if not contract_path.endswith('.sol'):
+        print(f'[!] {contract_path} is not a Solidity file.')
+        exit()
+
+    return [contract_path]
+
+def parse_argument_detectors(detector_path: str) -> List[str]:
+    if not os.path.exists(detector_path):
+        print(f'[!] detectors: File or directory {detector_path} does not exist.')
+        exit()
+    
+    if os.path.isdir(detector_path):
+        files = [p for p in Path(detector_path).rglob('*.py')]
+        if not files:
+            print(f'[!] detectors: Directory {detector_path} is empty.')
+            exit()
+
+        return files
+    
+    if not detector_path.endswith('.py'):
+        print(f'[!] detector: {detector_path} is not a Solidity file.')
+        exit()
+
+    return [detector_path]
 
 def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[str]:
     if not os.path.isfile(scope_fname):
-        raise Exception(f'[!] --scope: {scope_fname} does not exist.')
+        print(f'[!] scope: {scope_fname} does not exist.')
+        exit()
 
     with open(scope_fname, 'r') as f:
         scope_lines = f.readlines()
 
         if not scope_lines:
-            raise Exception(f'[!] --scope: {scope_fname} is empty')
+            print(f'[!] scope: {scope_fname} is empty')
+            exit()
 
         # Match all fnames in scope with actual files
         files_in_scope = []
@@ -33,61 +62,71 @@ def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[s
             filepaths = [x for x in contract_fnames if os.path.abspath(x).endswith(fname)]
 
             if not filepaths:
-                raise Exception(f'[!] --scope: {fname} does not match any file')
+                print(f'[!] scope: {fname} does not match any file')
+                exit()
 
             if len(filepaths) > 1:
                 tmp = ', '.join(filepaths)
-                raise Exception(f'[!] --scope: {fname} matches more than one file: {tmp}')
+                print(f'[!] scope: {fname} matches more than one file: {tmp}')
+                exit()
 
             files_in_scope.append(filepaths)
         
         return files_in_scope
 
-def parse_argument_remap(remappings_fname: str) -> Dict[str, str]:
-    if not os.path.isfile(remappings_fname):
-        raise Exception(f'[!] --remap: {remappings_fname} does not exist.')
+# def parse_argument_remap(remappings_fname: str) -> Dict[str, str]:
+#     if not os.path.isfile(remappings_fname):
+#         print(f'[!] --remap: {remappings_fname} does not exist.')
 
-    with open(remappings_fname, 'r') as f:
-        remap_lines = f.readlines()
+#     with open(remappings_fname, 'r') as f:
+#         remap_lines = f.readlines()
 
-        if not remap_lines:
-            raise Exception(f'[!] --remap: {remappings_fname} is empty')
+#         if not remap_lines:
+#             print(f'[!] --remap: {remappings_fname} is empty')
 
-        remappings = {}
-        for line in remap_lines:
-            identifier, path = line.split('=')
-            remappings[identifier] = path
+#         remappings = {}
+#         for line in remap_lines:
+#             identifier, path = line.split('=')
+#             remappings[identifier] = path
 
-        return remappings
+#         return remappings
 
-def handle_arguments():
+def handle_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Scan for vulnerabilities based on regex or AST queries.')
     parser.add_argument(
         'contract', 
-        metavar='<contract>', 
+        metavar='<path_to_contract>', 
         type=str,
-        help='Soldiity file or folder to scan'
+        help='Path to .sol file or folder containing .sol files to scan'
     )
     parser.add_argument(
-        '--scope', 
+        '-d', '--detectors', 
+        metavar='<path_to_detector>', 
+        type=str,
+        default=DETECTORS_PATH,
+        help='Path to .py file or folder containing .py files which implement detectors'
+    )
+    parser.add_argument(
+        '-s', '--scope', 
         metavar='<scope.txt>', 
         type=str,
-        help='Text file containing a list of contracts in scope'
+        help='Text file containing a list of  contracts in scope'
     )
-    parser.add_argument(
-        '--remap', 
-        metavar='<remappings.txt>', 
-        type=str,
-        help='Text file containing import remappings'
-    )
+    # parser.add_argument(
+    #     '-r', '--remap', 
+    #     metavar='<remappings.txt>', 
+    #     type=str,
+    #     help='Text file containing import remappings'
+    # )
 
     args = parser.parse_args()
     args.contract = parse_argument_contract(args.contract)
+    args.detectors = parse_argument_detectors(args.detectors)
 
-    if args.scope is not None:
+    if args.scope:
         args.scope = parse_argument_scope(args.contract, args.scope)
         
-    if args.remap is not None:
-        args.scope = parse_argument_remap(args.remap)
+    # if args.remap is not None:
+    #     args.remap = parse_argument_remap(args.remap)
 
     return args
