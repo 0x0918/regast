@@ -1,10 +1,11 @@
 from typing import List
+
 from regast.core.expressions.member_access import MemberAccess
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 
 
-class SelfBalance(Detector):
+class AddressBalance(Detector):
     NAME = 'Use `selfbalance()` instead of `address(this).balance`'
     CLASSIFICATION = DetectorClassification.GAS
 

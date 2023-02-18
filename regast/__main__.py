@@ -9,7 +9,7 @@ from regast.detectors.result import Result
 from regast.regast import Regast
 from regast.utilities.command_line import handle_arguments
 from regast.utilities.output import output_to_stdout
-from regast.utilities.setup_dependencies import initialize_dependencices
+from regast.utilities.setup_dependencies import initialize_dependencies
 
 
 def get_detectors():
@@ -31,6 +31,9 @@ def get_results_from_ast(
     return results
 
 def main():
+    # Handle dependencies
+    initialize_dependencies()
+
     # Parse arguments from command line
     args = handle_arguments()
 
@@ -41,5 +44,37 @@ def main():
     output_to_stdout(results)
 
 if __name__ == '__main__':
-    initialize_dependencices()
     main()
+
+"""
+TODO
+- [ ] Parsing of ASTs to classes
+     - [ ] Scope resolution
+- [ ] Implement `Result` class
+- [ ] Detectors
+    - [ ] Complete `detector.py`
+        - [ ] Regex
+        - [ ] Using classes API
+        - [ ] Queries?
+    - [ ] Add detectors
+- [ ] Output
+    - [ ] stdout
+    - [ ] Markdown
+        - [ ] Default behaviour from `detector.NAME` and `detector.DESCRIPTION`
+        - [ ] Use `detector.TEMPLATE` if specified
+- [ ] Implement importing detectors and templates from custom directories
+    - [ ] Add command line option `--detectors` and `--templates`
+    - [ ] Figure out how to import detectories from a custom directory
+- [ ] Documentation
+    - [ ] README
+    - [ ] How to create a new detector/classification
+        - [ ] API for individual classes
+    - [ ] Included detectors
+- [ ] VSCode Extension
+    - [ ] Incremental parsing
+        - [ ] Find a way to save the "state"
+        - [ ] Only run parsing and detectors on modified parts of code
+    - [ ] Linting and refactoring using detectors (eg. Gas Detectors)
+    - [ ] CodeQL-like style of writing a detector and running in the editor
+        - This could just be the ability to execute individual detectors using the cmdline, and passing the output to VSCode to display somehow
+"""

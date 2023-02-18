@@ -3,25 +3,15 @@ from typing import Dict, List
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 
-# TODO: Check this, it's buggy
-
 def format_fname_to_results(fname_to_results: Dict[str, List[Result]]) -> str:
     formatted_fname_results = []
     for fname, results in fname_to_results.items():
-        fname_str = f'{fname}:\n'
+        s = f'{fname}:\n'
 
         sorted_results = sorted(results, key=lambda r: r.start_line)
-        formatted_results = []
-        for i, result in enumerate(sorted_results):
-            s = '\n' if result.is_multiline and i != 0 else ''
-            s += result.code
-            if result.is_multiline and result != sorted_results[-1] and not sorted_results[i+1].is_multiline:
-                s += '\n'
+        s += '\n'.join(r.code for r in sorted_results)
 
-            formatted_results.append(s)
-
-        fname_str += '\n'.join(formatted_results)
-        formatted_fname_results.append(fname_str)
+        formatted_fname_results.append(s)
 
     return '\n'.join(formatted_fname_results)
 

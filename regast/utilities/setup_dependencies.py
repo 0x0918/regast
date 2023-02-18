@@ -9,6 +9,5 @@ def setup_treesitter():
     if not os.path.exists(TREE_SITTER_SOLIDITY_LIBRARY_PATH):
         Language.build_library(TREE_SITTER_SOLIDITY_LIBRARY_PATH, [tree_sitter_solidity_path])
 
-def initialize_dependencices():
-    # setup_antlr4()
+def initialize_dependencies():
     setup_treesitter()

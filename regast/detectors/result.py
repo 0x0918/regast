@@ -36,14 +36,14 @@ class Result:
     def code(self) -> str:
         lines = self.source.splitlines()
 
-        formatted_lines = []
+        s = ''
         for line_number in range(self.start_line - 1, self.end_line):
-            s = str(line_number + 1).rjust(4, ' ') 
+            s += str(line_number + 1).rjust(4, ' ') 
             s += ':' + ' '*4
             s += lines[line_number]
-            formatted_lines.append(s)
+            s += '\n'
         
-        return '\n'.join(formatted_lines)
+        return s
         
     
     def __str__(self):
