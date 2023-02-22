@@ -1,4 +1,4 @@
-# regast
+# **regast**
 **regast** is a static analyzer for identifying security vulnerabilities and gas optimizations in Solidity codebases.
 
 **regast** converts the abstract syntax trees of Solidity code into Python classes, which can then be queried by detectors to identify common vulnerability patterns.
@@ -8,22 +8,16 @@
 * *Easy to customize:* **regast** is designed for users to easily write and run their own custom detectors.
 
 ## Table of Contents
-- [regast](#regast)
-  - [Table of Contents](#table-of-contents)
-  - [Usage](#usage)
-    - [Installation](#installation)
-    - [Running **regast**](#running-regast)
-  - [Detectors](#detectors)
-    - [Included detectors](#included-detectors)
-    - [Writing custom detectors](#writing-custom-detectors)
-  - [Implementation](#implementation)
-    - [Repository structure](#repository-structure)
-    - [Future improvements](#future-improvements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Detectors](#detectors)
+  - [Included detectors](#included-detectors)
+  - [Writing custom detectors](#writing-custom-detectors)
+- [Implementation](#implementation)
+  - [Repository structure](#repository-structure)
 
 
-## Usage
-
-### Installation
+## Installation
 **regast** requires Python 3.10 or above.
 
 First, clone this repository and its submodules:
@@ -47,7 +41,7 @@ cd ..
 rm -r regast
 ```
 
-### Running **regast**
+## Usage
 The `regast` command can be used on either `.sol` file or a folder containing Solidity files:
 ```sh
 $ regast --help
@@ -89,7 +83,7 @@ Below are the currently implemented detectors which **regast** runs by default. 
 
 ### Writing custom detectors
 
-For information on how to write custom detectors, refer to [`docs/writing-custom-detectors.md`](docs/writing-custom-detectors.md).
+For information on how to write custom detectors, please refer to [`docs/writing-custom-detectors.md`](docs/writing-custom-detectors.md).
 
 ## Implementation
 **regast** is built on top of [tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python), which provides Python bindings for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library. The grammar for Solidity is taken from [tree-sitter-solidity](https://github.com/JoranHonig/tree-sitter-solidity).
@@ -103,7 +97,3 @@ Most of **regast**'s code are in the following directories:
 * [`regast/core`](regast/core) contains Python classes which represents parts of the AST.
 * [`regast/detectors`](regast/detectors) contains detectors which **regast** runs by default.
 * [`regast/parsing`](regast/parsing) contains the logic for parsing the AST from `tree-sitter` into Python classes. 
-
-### Future improvements
-*  **Adding support for [crytic-compile](https://github.com/crytic/crytic-compile)**  
-**regast** is limited by the Solidity grammar defined in  `tree-sitter-solidity`, which is not updated frequently. This causes **regast** to be unable to parse some Solidity codebases, or newer versions of Solidity. <br> By adding support for parsing using [crytic-compile](https://github.com/crytic/crytic-compile), **regast** would be able to parse more Solidity codebases. However, this method does require code compilation.
