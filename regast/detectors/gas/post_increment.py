@@ -6,7 +6,7 @@ from regast.detectors.result import Result
 
 
 class PostIncrement(Detector):
-    NAME = '`++i` costs less gas than `i++`, especially when used in `for`-loops (`--i`/`i--` too)' 
+    NAME = '`++i` costs less gas than `i++` or `i += 1`' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

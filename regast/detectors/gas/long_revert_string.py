@@ -7,7 +7,7 @@ from regast.detectors.result import Result
 
 
 class LongRevertString(Detector):
-    NAME = 'Long revert strings' 
+    NAME = '`require` statements with long error messages.' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

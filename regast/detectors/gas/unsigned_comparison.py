@@ -1,16 +1,16 @@
 from typing import List
-from regast.core.expressions.binary_operation import BinaryOperation
 
+from regast.core.expressions.binary_operation import BinaryOperation
 from regast.core.expressions.literal import Literal, LiteralType
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 
-class ExampleDetector(Detector):
+
+class UnsignedComparison(Detector):
     NAME = 'Use `!= 0` instead of `> 0` for unsigned integer comparison'
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:
-
         # Checks if an expression is the number 0
         def is_zero(expression):
             return (

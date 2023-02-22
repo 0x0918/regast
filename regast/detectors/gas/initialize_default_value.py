@@ -9,7 +9,7 @@ from regast.detectors.result import Result
 
 
 class InitializeDefaultValue(Detector):
-    NAME = 'Don\'t initialize variables with default value' 
+    NAME = 'Unnecessary initialization of variables with default values' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

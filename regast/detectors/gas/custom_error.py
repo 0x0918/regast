@@ -7,7 +7,7 @@ from regast.detectors.result import Result
 
 
 class CustomError(Detector):
-    NAME = 'Use Custom Errors' 
+    NAME = 'Use custom errors instead of `require` statements' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

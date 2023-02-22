@@ -7,7 +7,7 @@ from regast.detectors.result import Result
 
 
 class CacheArrayLength(Detector):
-    NAME = 'Cache array length outside of loop' 
+    NAME = 'Cache array length outside of for-loops' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

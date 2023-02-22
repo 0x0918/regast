@@ -7,7 +7,7 @@ from regast.detectors.result import Result
 
 
 class PrivateConstant(Detector):
-    NAME = 'Using `private` rather than `public` for constants, saves gas' 
+    NAME = 'Declare constants as `private` instead of non-public to save gas' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

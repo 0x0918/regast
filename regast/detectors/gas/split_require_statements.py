@@ -8,7 +8,7 @@ from regast.detectors.result import Result
 
 
 class SplitRequireStatements(Detector):
-    NAME = 'Splitting require statements that use `&&` saves gas' 
+    NAME = 'Use separate `require` statements instead of `&&`' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

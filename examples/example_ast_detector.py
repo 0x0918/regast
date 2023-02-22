@@ -1,7 +1,7 @@
 from typing import List
+
 from regast.core.expressions.binary_operation import BinaryOperation
 from regast.core.expressions.call_expression import CallExpression
-
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 
@@ -14,7 +14,7 @@ require(0 < b, "error");
 """
 
 # All detectors inherit from the Detector class
-class ExampleDetector(Detector):
+class ExampleASTDetector(Detector):
     # Detector's name
     NAME: str = 'Example Detector'
 

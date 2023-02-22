@@ -7,7 +7,7 @@ from regast.detectors.result import Result
 
 
 class ShiftArithmetic(Detector):
-    NAME = 'Using `private` rather than `public` for constants, saves gas' 
+    NAME = 'Use `<<` and `>>` instead of multiplication/division where possible' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:

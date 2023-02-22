@@ -5,7 +5,7 @@ from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 
 
-class BoolStateVariable(Detector):
+class BoolStorage(Detector):
     NAME = 'Using `bool` for storage incurs overhead' 
     CLASSIFICATION = DetectorClassification.GAS
 

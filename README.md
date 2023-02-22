@@ -5,7 +5,21 @@
 
 **regast** is heavily inspired by tools such as [Slither](https://github.com/crytic/slither), [4naly3er](https://github.com/Picodes/4naly3er) and [solstat](https://github.com/0xKitsune/solstat), but has the following differences:
 * *No compilation:* **regast** is able to run directly without compilation, making it viable for codebases that are difficult to compile.
-* *Easy to customize:* **regast** is designed for users to write and run their own custom detectors easily.
+* *Easy to customize:* **regast** is designed for users to easily write and run their own custom detectors.
+
+## Table of Contents
+- [regast](#regast)
+  - [Table of Contents](#table-of-contents)
+  - [Usage](#usage)
+    - [Installation](#installation)
+    - [Running **regast**](#running-regast)
+  - [Detectors](#detectors)
+    - [Included detectors](#included-detectors)
+    - [Writing custom detectors](#writing-custom-detectors)
+  - [Implementation](#implementation)
+    - [Repository structure](#repository-structure)
+    - [Future improvements](#future-improvements)
+
 
 ## Usage
 
@@ -52,8 +66,30 @@ options:
                         Path to .py file or folder containing .py files which implement detectors
 ```
 
-### Detectors
-For more information about detectors, see [`regast/detectors/README.md`](https://github.com/MiloTruck/regast/tree/main/regast/detectors/README.md).
+## Detectors
+
+### Included detectors
+Below are the currently implemented detectors which **regast** runs by default. Most of the detectors from [4naly3er](https://github.com/Picodes/4naly3er) and [solstat](https://github.com/0xKitsune/solstat) will be included in the future.
+
+| Detector                                                                         | Description                                                               | Classification |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------- | -------------- |
+| [`address_balance`](regast/detectors/gas/address_balance.py)                     | Use `selfbalance()` instead of `address(this).balance`.                   | Gas            |
+| [`address_zero`](regast/detectors/gas/address_zero.py)                           | Use assembly to check for `address(0)`.                                   | Gas            |
+| [`assign_update_array_value`](regast/detectors/gas/assign_update_array_value.py) | Update array values using `arr[i] += n` instead of `arr[i] = arr[i] + n`. | Gas            |
+| [`bool_storage`](regast/detectors/gas/bool_storage.py)                           | Using `bool` for storage incurs overhead.                                 | Gas            |
+| [`cache_array_length`](regast/detectors/gas/cache_array_length.py)               | Cache array length outside of for-loops.                                  | Gas            |
+| [`custom_error`](regast/detectors/gas/custom_error.py)                           | Use custom errors instead of `require` statements.                        | Gas            |
+| [`initialize_default_value`](regast/detectors/gas/initialize_default_value.py)   | Unnecessary initialization of variables with default values               | Gas            |
+| [`long_revert_string`](regast/detectors/gas/long_revert_string.py)               | `require` statements with long error messages.                            | Gas            |
+| [`post_increment`](regast/detectors/gas/post_increment.py)                       | `++i` costs less gas than `i++` or `i += 1`.                              | Gas            |
+| [`private_constant`](regast/detectors/gas/private_constant.py)                   | Declare constants as `private` instead of non-public to save gas.         | Gas            |
+| [`shift_arithmetic`](regast/detectors/gas/shift_arithmetic.py)                   | Use `<<` and `>>` instead of multiplication/division where possible.      | Gas            |
+| [`split_require_statements`](regast/detectors/gas/split_require_statements.py)   | Use separate `require` statements instead of `&&`.                        | Gas            |
+| [`unsigned_comparison`](regast/detectors/gas/unsigned_comparison.py)             | Use `!= 0` instead of `> 0` for unsigned integer comparison.              | Gas            |
+
+### Writing custom detectors
+
+For information on how to write custom detectors, refer to [`docs/writing-custom-detectors.md`](docs/writing-custom-detectors.md).
 
 ## Implementation
 **regast** is built on top of [tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python), which provides Python bindings for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library. The grammar for Solidity is taken from [tree-sitter-solidity](https://github.com/JoranHonig/tree-sitter-solidity).
@@ -62,14 +98,12 @@ For more information about detectors, see [`regast/detectors/README.md`](https:/
 
 This allows individual detectors to easily identify common vulnerability patterns by querying the AST.
 
-### Package Structure
+### Repository structure
 Most of **regast**'s code are in the following directories:
-* [`regast/core`](https://github.com/MiloTruck/regast/tree/main/regast/core) contains Python classes which represents parts of the AST.
-* [`regast/detectors`](https://github.com/MiloTruck/regast/tree/main/regast/detectors) contains detectors which **regast** runs by default.
-* [`regast/parsing`](https://github.com/MiloTruck/regast/tree/main/regast/parsing) contains the logic for parsing the AST from `tree-sitter` into Python classes. 
+* [`regast/core`](regast/core) contains Python classes which represents parts of the AST.
+* [`regast/detectors`](regast/detectors) contains detectors which **regast** runs by default.
+* [`regast/parsing`](regast/parsing) contains the logic for parsing the AST from `tree-sitter` into Python classes. 
 
-## Future improvements
-### Adding support for [crytic-compile](https://github.com/crytic/crytic-compile)
-**regast** is limited by the Solidity grammar defined in  `tree-sitter-solidity`, which is not updated frequently. This causes **regast** to be unable to parse some Solidity codebases, or newer versions of Solidity. 
-
-By adding support for parsing using [crytic-compile](https://github.com/crytic/crytic-compile), **regast** would be able to parse more Solidity codebases. However, this method does require code compilation.
+### Future improvements
+*  **Adding support for [crytic-compile](https://github.com/crytic/crytic-compile)**  
+**regast** is limited by the Solidity grammar defined in  `tree-sitter-solidity`, which is not updated frequently. This causes **regast** to be unable to parse some Solidity codebases, or newer versions of Solidity. <br> By adding support for parsing using [crytic-compile](https://github.com/crytic/crytic-compile), **regast** would be able to parse more Solidity codebases. However, this method does require code compilation.
