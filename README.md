@@ -1,11 +1,9 @@
 # **regast**
 **regast** is a static analyzer for identifying security vulnerabilities and gas optimizations in Solidity codebases.
 
-**regast** converts the abstract syntax trees of Solidity code into Python classes, which can then be queried by detectors to identify common vulnerability patterns.
-
-**regast** is heavily inspired by tools such as [Slither](https://github.com/crytic/slither), [4naly3er](https://github.com/Picodes/4naly3er) and [solstat](https://github.com/0xKitsune/solstat), but has the following differences:
-* *No compilation:* **regast** is able to run directly without compilation, making it viable for codebases that are difficult to compile.
-* *Easy to customize:* **regast** is designed for users to easily write and run their own custom detectors.
+It is heavily inspired by tools such as [Slither](https://github.com/crytic/slither), [solstat](https://github.com/0xKitsune/solstat) and [4naly3er](https://github.com/Picodes/4naly3er), but has the following differences:
+* **No compilation:** regast is able to run directly without compilation, making it viable for codebases that are difficult to compile.
+* **Easy to customize:** regast is designed for users to easily write and run their own custom detectors.
 
 ## Table of Contents
 - [Installation](#installation)
@@ -88,9 +86,7 @@ For information on how to write custom detectors, please refer to [`docs/writing
 ## Implementation
 **regast** is built on top of [tree-sitter-python](https://github.com/tree-sitter/tree-sitter-python), which provides Python bindings for the [tree-sitter](https://tree-sitter.github.io/tree-sitter/) parsing library. The grammar for Solidity is taken from [tree-sitter-solidity](https://github.com/JoranHonig/tree-sitter-solidity).
 
-`tree-sitter` first converts Solidity source code into multiple abstract syntax trees (AST). **regast** then converts each node in these ASTs into corresponding Python classes.
-
-This allows individual detectors to easily identify common vulnerability patterns by querying the AST.
+`tree-sitter` first converts Solidity source code into multiple abstract syntax trees (AST). **regast** then parses each node in these ASTs into corresponding Python classes. After the parsing is completed, individual detectors query the AST through these Python classes to identify common vulnerability patterns.
 
 ### Repository structure
 Most of **regast**'s code are in the following directories:
