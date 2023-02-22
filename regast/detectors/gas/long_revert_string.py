@@ -36,4 +36,4 @@ class LongRevertString(Detector):
             call_expressions = filter(is_require_with_long_revert_string, call_expressions)
             results.extend(call_expressions)
 
-        return self.generate_results_from_core_objects(call_expressions)
+        return self.generate_results_from_core_objects(results)

@@ -13,8 +13,6 @@ class InitializeDefaultValue(Detector):
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:
-        results = []
-
         # Check if an expression matches address(0), taken from the AddressZero detector
         # https://github.com/MiloTruck/regast/blob/main/regast/detectors/gas/address_zero.py
         def is_address_zero(expression):
@@ -44,6 +42,8 @@ class InitializeDefaultValue(Detector):
                     return str(elementary_type) == 'address' and is_address_zero(variable.initial_expression)
             
             return False
+
+        results = []
 
         for source_unit in self.source_units:
             for contract in source_unit.all_contracts:
