@@ -3,7 +3,7 @@
 
 **regast** converts the abstract syntax trees of Solidity code into Python classes, which can then be queried by detectors to identify common vulnerability patterns.
 
-**regast** is heavily inspired by tools such as [Slither](https://github.com/crytic/slither) and [solstat](https://github.com/0xKitsune/solstat), but has the following differences:
+**regast** is heavily inspired by tools such as [Slither](https://github.com/crytic/slither), [4naly3er](https://github.com/Picodes/4naly3er) and [solstat](https://github.com/0xKitsune/solstat), but has the following differences:
 * *No compilation:* **regast** is able to run directly without compilation, making it viable for codebases that are difficult to compile.
 * *Easy to customize:* **regast** is designed for users to write and run their own custom detectors easily.
 

@@ -1,6 +1,9 @@
 from typing import List
 
 from regast.core.expressions.binary_operation import BinaryOperation
+from regast.core.expressions.literal import Literal
+from regast.core.expressions.type_cast_expression import TypeCastExpression
+from regast.core.types.elementary_type import ElementaryType
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 
@@ -10,20 +13,29 @@ class AddressZero(Detector):
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:
+        # Checks if an expression matches address(0)
+        def is_address_zero(expression):
+            return (
+                isinstance(expression, TypeCastExpression) and
+                isinstance(literal := expression.casted_expression, Literal) and
+                literal.value == 0 and
+                isinstance(casted_type := expression.type, ElementaryType) and
+                str(casted_type) == 'address'
+            )
+
+        # Checks if a binary operation is a comparison to address(0)
+        # (Has '==" or "!=" operator and has address(0) on either side)
+        def is_compare_to_address_zero(binary_operation):
+            return str(binary_operation.operator) in ['==', '!='] and (
+                is_address_zero(binary_operation.left_expression) or 
+                is_address_zero(binary_operation.right_expression)
+            )
+        
         results = []
 
-        # Iterate through all source units
         for source_unit in self.source_units:
-            # Find all instances binary operations
             binary_operations = source_unit.get_instances_of(BinaryOperation)
+            binary_operations = filter(is_compare_to_address_zero, binary_operations)
+            results.extend(binary_operations)
 
-            for binary_operation in binary_operations:
-                # Filter binary operations with '==" or "!=" and have "address(0)" on either side
-                if (
-                    str(binary_operation.operator) in ['==', '!='] and
-                    'address(0)' in [str(binary_operation.left_expression), str(binary_operation.right_expression)]
-                ):
-                    result = self.generate_result_from_core_object(binary_operation)
-                    results.append(result)
-
-        return results
+        return self.generate_results_from_core_objects(results)

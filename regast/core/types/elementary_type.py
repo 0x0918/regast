@@ -208,7 +208,7 @@ class ElementaryType(Type):
         raise RegastException(f"{self.name} does not have a max value")
 
     def __str__(self):
-        return self.type + ('payable' if self.is_payable else '')
+        return self.type + (' payable' if self.is_payable else '')
 
     def __eq__(self, other):
         if isinstance(other, str):

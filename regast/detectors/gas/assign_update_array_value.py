@@ -8,34 +8,34 @@ from regast.detectors.result import Result
 
 
 class AssignUpdateArrayValue(Detector):
-    NAME = 'Update array values using `arr[x] += y` instead of `arr[x] = arr[x] + y' 
+    NAME = 'Update array values using `arr[i] += n` instead of `arr[i] = arr[i] + n`' 
     CLASSIFICATION = DetectorClassification.GAS
 
     def detect(self) -> List[Result]:
+        # Checks for arr[i] = arr[i] + n pattern
+        def is_array_update_assignment(assignment_operation):
+            return (
+                # Assignment operation has "=" operator
+                str(assignment_operation.operator) == '=' and
+
+                # Assigned value is array access - arr[x] = ...
+                isinstance(assignment_operation.left_expression, ArrayAccess) and
+
+                # Right expression is a binary operation - ... = <x> + <y>
+                isinstance(binary_operation := assignment_operation.right_expression, BinaryOperation) and
+
+                # Binary Operation has one of the following operators
+                str(binary_operation.operator) in ["*", "/", "%", "+", "-", "<<", ">>", ">>>", "&", "^", "|"] and
+
+                # Checks for <x> = <x> + ... or <x> = ... + <x>
+                assignment_operation.left_expression in [binary_operation.left_expression, binary_operation.right_expression]
+            )
+
         results = []
 
-        # Iterate through all source units
         for source_unit in self.source_units:
-            # Find all instances assignment operations
             assignment_operations = source_unit.get_instances_of(AssignmentOperation)
+            assignment_operations = filter(is_array_update_assignment, assignment_operations)
+            results.extend(assignment_operations)
 
-            for assignment_operation in assignment_operations:
-                # Filter assignment operations with "=" operator, has an array access
-                # on the left and a binary operation on the right
-                if (
-                    str(assignment_operation.operator) == '=' and
-                    isinstance(assignment_operation.left_expression, ArrayAccess) and
-                    isinstance(assignment_operation.right_expression, BinaryOperation)
-                ):
-                    binary_operation = assignment_operation.right_expression
-
-                    # Check that assignment operation follows <x> = <x> + <y> and binary
-                    # operation has an operator that can be truncated to <x> += <y>
-                    if (
-                        assignment_operation.left_expression == binary_operation.right_expression and
-                        str(binary_operation.operator) in ["*", "/", "%", "+", "-", "<<", ">>", ">>>", "&", "^", "|"]
-                    ):
-                        result = self.generate_result_from_core_object(assignment_operation)
-                        results.append(result)
-
-        return results
+        return self.generate_results_from_core_objects(results)

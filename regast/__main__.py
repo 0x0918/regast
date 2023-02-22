@@ -5,7 +5,6 @@ import inspect
 from typing import Dict, List
 
 from regast.detectors.detector import Detector, DetectorClassification
-from regast.detectors.example_detector import ExampleDetector
 from regast.detectors.result import Result
 from regast.regast import Regast
 from regast.utilities.command_line import handle_arguments
@@ -24,7 +23,7 @@ def get_detectors(detector_paths: List[str]) -> List[Detector]:
         
         # Get detectors from loaded module
         for detector_class in inspect.getmembers(module, inspect.isclass):
-            if issubclass(detector_class[1], Detector) and detector_class[1] not in [Detector, ExampleDetector]:
+            if issubclass(detector_class[1], Detector) and detector_class[1] != Detector:
                 detectors.append(detector_class[1])
 
     return detectors

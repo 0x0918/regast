@@ -38,7 +38,7 @@ class Result:
         s = ''
         for line_number in range(self.start_line - 1, self.end_line):
             s += str(line_number + 1).rjust(4, ' ') 
-            s += ':' + ' '*4
+            s += ': '
             s += lines[line_number]
             s += '\n'
         

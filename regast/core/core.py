@@ -48,19 +48,30 @@ class Core:
         local_variables = a.get_instances_of(LocalVariable)
         local_variables, state_variables = a.get_instances_of(LocalVariable, "StateVariable")
         """
+
+        # Check if a core object has the same class type as core_type
+        def matches_core_type(obj):
+            return (
+                isinstance(obj, core_type) or 
+                (isinstance(core_type, str) and obj.__class__.__name__ == core_type)
+            )
+
         instances = []
+
+        # Check if self matches core_type
+        if matches_core_type(self):
+            instances.append(self)
 
         for child in self.children:
             # Check if child matches core_type
-
-            if isinstance(child, core_type) or (isinstance(core_type, str) and child.__class__.__name__ == core_type):
+            if matches_core_type(child):
                 instances.append(child)
             
             # Recursively do this for children too, and add the results to our current ones
             child_instances = child.get_instances_of(core_type)
             instances.extend(child_instances)
         
-        # Remove duplicates
+        # Remove duplicates and return
         return list(set(instances))
 
     def __hash__(self):
