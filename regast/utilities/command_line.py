@@ -74,6 +74,13 @@ def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[s
         
         return files_in_scope
 
+def parse_argument_report(fname: str):
+    report_fname = f'{fname}.md'
+    if os.path.exists(report_fname):
+        print(f'[!] report: {report_fname} already exists.')
+        exit()
+
+
 # def parse_argument_remap(remappings_fname: str) -> Dict[str, str]:
 #     if not os.path.isfile(remappings_fname):
 #         print(f'[!] --remap: {remappings_fname} does not exist.')
@@ -95,22 +102,28 @@ def handle_arguments() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description='Scan for vulnerabilities based on regex or AST queries.')
     parser.add_argument(
         'contract', 
-        metavar='<path_to_contract>', 
+        metavar='<contract>', 
         type=str,
-        help='Path to .sol file or folder containing .sol files to scan'
+        help='.sol file or folder containing .sol files to scan'
     )
     parser.add_argument(
         '-d', '--detectors', 
-        metavar='<path_to_detector>', 
+        metavar='<detector>', 
         type=str,
         default=DETECTORS_PATH,
-        help='Path to .py file or folder containing .py files which implement detectors'
+        help='.py file or folder containing .py files which implement detectors'
     )
     parser.add_argument(
         '-s', '--scope', 
-        metavar='<scope.txt>', 
+        metavar='<scope>', 
         type=str,
-        help='Text file containing a list of  contracts in scope'
+        help='Text file containing a list of contracts in scope'
+    )
+    parser.add_argument(
+        '-r', '--report', 
+        metavar='<filename>',
+        type=str,
+        help='Generate a markdown report in <filename>.md'
     )
     # parser.add_argument(
     #     '-r', '--remap', 
@@ -125,6 +138,9 @@ def handle_arguments() -> argparse.Namespace:
 
     if args.scope:
         args.scope = parse_argument_scope(args.contract, args.scope)
+
+    if args.report:
+        parse_argument_report(args.report)
         
     # if args.remap is not None:
     #     args.remap = parse_argument_remap(args.remap)

@@ -35,5 +35,5 @@ def output_to_stdout(results: Dict[DetectorClassification, Dict[Detector, Dict[s
 
     print('\n'.join(formatted_classification_results))
             
-def output_to_markdown(result: Dict[str, List[Result]]):
+def output_to_markdown(results: Dict[DetectorClassification, Dict[Detector, Dict[str, List[Result]]]]):
     pass
