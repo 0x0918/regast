@@ -7,7 +7,6 @@ from regast.core.core import Core
 from regast.core.declarations.contracts.contract import Contract
 from regast.core.declarations.source_unit import SourceUnit
 from regast.detectors.result import Result
-from regast.parsing.parser import Parser
 
 
 class DetectorClassification(Enum):
@@ -18,22 +17,8 @@ class DetectorClassification(Enum):
     HIGH = 5
 
 class Detector(ABC):
-    @property
-    @abstractmethod
-    def NAME(self) -> str:
-        pass
-
-    @property
-    @abstractmethod
-    def CLASSIFICATION(self) -> DetectorClassification:
-        pass
-
-    @abstractmethod
-    def detect(self) -> List[Result]:
-        pass
-
-    def __init__(self, parser: Parser):
-        self._fname_to_source_unit: Dict[str, SourceUnit] = parser.fname_to_source_unit
+    def __init__(self, fname_to_source_unit: Dict[str, SourceUnit]):
+        self._fname_to_source_unit: Dict[str, SourceUnit] = fname_to_source_unit
         self._contracts: List[Contract] = []
 
     @property
@@ -80,3 +65,17 @@ class Detector(ABC):
                     results.append(result)
 
         return results
+    
+    @property
+    @abstractmethod
+    def NAME(self) -> str:
+        pass
+
+    @property
+    @abstractmethod
+    def CLASSIFICATION(self) -> DetectorClassification:
+        pass
+
+    @abstractmethod
+    def detect(self) -> List[Result]:
+        pass

@@ -57,28 +57,22 @@ if __name__ == '__main__':
 
 """
 TODO
-- [ ] Parsing of ASTs to classes
-     - [ ] Scope resolution
-- [ ] Implement `Result` class
+- [ ] Scope resolution
+- [ ] Name resolution
+- [ ] Type resolution
 - [ ] Detectors
-    - [ ] Complete `detector.py`
-        - [ ] Regex
-        - [ ] Using classes API
-        - [ ] Queries?
-    - [ ] Add detectors
+    - [ ] Add 4naly3er remaining detectors
+    - [ ] Add solstat detectors
+    - [ ] Write tests for detectors
 - [ ] Output
-    - [ ] stdout
     - [ ] Markdown
         - [ ] Default behaviour from `detector.NAME` and `detector.DESCRIPTION`
-        - [ ] Use `detector.TEMPLATE` if specified
-- [ ] Implement importing detectors and templates from custom directories
-    - [ ] Add command line option `--detectors` and `--templates`
-    - [ ] Figure out how to import detectories from a custom directory
 - [ ] Documentation
-    - [ ] README
+    - [ ] Include sample reports
     - [ ] How to create a new detector/classification
+        - [ ] Methods of detector class
+        - [ ] example_regex_detector
         - [ ] API for individual classes
-    - [ ] Included detectors
 - [ ] VSCode Extension
     - [ ] Incremental parsing
         - [ ] Find a way to save the "state"

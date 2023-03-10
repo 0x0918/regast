@@ -16,12 +16,13 @@ from regast.core.statements.return_statement import ReturnStatement
 from regast.core.statements.revert_statement import RevertStatement
 from regast.core.statements.statement import Statement
 from regast.core.statements.try_statement import CatchClause, TryStatement
-from regast.core.statements.variable_declaration_statement import VariableDeclaration, VariableDeclarationFromTupleStatement, VariableDeclarationStatement, VariableDeclarationWithVarStatement
+from regast.core.statements.variable_declaration_statement import VariableDeclarationFromTupleStatement, VariableDeclarationStatement, VariableDeclarationWithVarStatement
 from regast.core.statements.while_statement import WhileStatement
+from regast.core.variables.local_variable import LocalVariable
 from regast.core.variables.variable import DataLocation
 from regast.exceptions import ParsingException
 from regast.parsing.tree_sitter.expressions import ExpressionParser
-from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_parameters
+from regast.parsing.tree_sitter.helper import extract_call_arguments, extract_nodes_between_brackets, extract_parameters
 from regast.parsing.tree_sitter.types import TypeParser
 
 
@@ -80,7 +81,7 @@ class StatementParser:
     def parse_variable_declaration_statement(node) -> Union[VariableDeclarationStatement, VariableDeclarationFromTupleStatement, VariableDeclarationWithVarStatement]:
         assert node.type == 'variable_declaration_statement'
 
-        def parse_variable_declaration(node) -> VariableDeclaration:
+        def parse_variable_declaration(node) -> LocalVariable:
             assert node.type == 'variable_declaration'
 
             type_name = location = name = None
@@ -92,31 +93,31 @@ class StatementParser:
                 case _:
                     raise ParsingException(f'Unable to parse variable_declaration: {node.text}')
 
-            variable_declaration = VariableDeclaration(node)
-            variable_declaration._type = TypeParser.parse_type_name(type_name)
-            variable_declaration._name = ExpressionParser.parse_identifier(name)
+            local_variable = LocalVariable(node)
+            local_variable._type = TypeParser.parse_type_name(type_name)
+            local_variable._name = ExpressionParser.parse_identifier(name)
             if location:
-                variable_declaration._data_location = DataLocation(location.text)
+                local_variable._data_location = DataLocation(location.text)
 
-            return variable_declaration
+            return local_variable
 
         match node.children_types:
             case ['variable_declaration', *remaining_types]:
                 variable_declaration, *remaining_nodes = node.children
 
-                statement = VariableDeclarationStatement(node)
-                statement._variable_declaration = parse_variable_declaration(variable_declaration)
+                local_variable = parse_variable_declaration(variable_declaration)
 
                 match remaining_types:
                     # uint256 a;
                     case []:
-                        return statement
+                        pass
                     
                     # uint256 a = 10;
                     case ['=', _]:
                         _, expression = remaining_nodes
-                        statement._expression = ExpressionParser.parse_expression(expression)
-                        return statement
+                        local_variable._expression = ExpressionParser.parse_expression(expression)
+
+                return VariableDeclarationStatement(local_variable)
 
             case ['variable_declaration_tuple', '=', _]:
                 variable_declaration_tuple, _, expression = node.children
@@ -124,21 +125,17 @@ class StatementParser:
                 match variable_declaration_tuple.children_types:
                     # (uint256 a, uint256 b) = f()
                     case ['(', *_, ')']:
-                        _, *variable_declarations, _ = variable_declaration_tuple.children
-                        statement = VariableDeclarationFromTupleStatement(node)
-                        statement._expression = ExpressionParser.parse_expression(expression)
+                        local_variables, _ = extract_nodes_between_brackets(
+                            variable_declaration_tuple, '(', ')',
+                            node_type='variable_declaration',
+                            parsing_function=parse_variable_declaration
+                        )
 
-                        for child_node in variable_declarations:
-                            match child_node.type:
-                                case 'variable_declaration':
-                                    variable_declaration = parse_variable_declaration(child_node)
-                                    statement._variable_declarations.append(variable_declaration)
-                                case ',':
-                                    pass
-                                case other:
-                                    raise ParsingException(f'Unknown tree-sitter node type in variable_declaration_tuple: {other}')
+                        expression = ExpressionParser.parse_expression(expression)
+                        for local_variable in local_variables:
+                            local_variable._expression = expression
 
-                        return statement
+                        return VariableDeclarationFromTupleStatement(local_variables)
 
                     case ['var', '(', *_, ')']:
                         # var (a, b, c) = f()

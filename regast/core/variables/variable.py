@@ -24,6 +24,9 @@ class Variable(Core):
         self._data_location: Optional[DataLocation] = None
         self._expression: Optional[Expression] = None
 
+        self._read_references: List[Identifier] = []
+        self._write_references: List[Identifier] = []
+
     @property
     def type(self) -> Type:
         return self._type
@@ -43,6 +46,18 @@ class Variable(Core):
     @property
     def is_initialized(self) -> bool:
         return bool(self.initial_expression)
+
+    @property
+    def read_references(self) -> List[Identifier]:
+        return list(self._read_references)
+
+    @property
+    def write_references(self) -> List[Identifier]:
+        return list(self.write_references)
+
+    @property
+    def references(self) -> List[Identifier]:
+        return self.read_references + self.write_references
 
     @property
     def children(self) -> List:

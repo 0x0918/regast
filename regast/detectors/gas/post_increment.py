@@ -1,7 +1,7 @@
 from typing import List
+
 from regast.core.expressions.assignment_operation import AssignmentOperation
 from regast.core.expressions.literal import Literal, LiteralType
-
 from regast.core.expressions.update_operation import UpdateOperation
 from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result

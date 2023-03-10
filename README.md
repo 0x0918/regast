@@ -6,13 +6,15 @@ It is heavily inspired by tools such as [Slither](https://github.com/crytic/slit
 * **Easy to customize:** regast is designed for users to easily write and run their own custom detectors.
 
 ## Table of Contents
-- [Installation](#installation)
-- [Usage](#usage)
-- [Detectors](#detectors)
-  - [Included detectors](#included-detectors)
-  - [Writing custom detectors](#writing-custom-detectors)
-- [Implementation](#implementation)
-  - [Repository structure](#repository-structure)
+- [**regast**](#regast)
+  - [Table of Contents](#table-of-contents)
+  - [Installation](#installation)
+  - [Usage](#usage)
+  - [Detectors](#detectors)
+    - [Included detectors](#included-detectors)
+    - [Writing custom detectors](#writing-custom-detectors)
+  - [Implementation](#implementation)
+    - [Repository structure](#repository-structure)
 
 
 ## Installation
@@ -41,7 +43,7 @@ rm -r regast
 
 ## Usage
 The `regast` command can be used on either `.sol` file or a folder containing Solidity files:
-```sh
+```
 $ regast --help
 usage: regast [-h] [-s <scope.txt>] [-d <path_to_detector>] <path_to_contract>
 
