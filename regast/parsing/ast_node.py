@@ -20,8 +20,10 @@ class ASTNode:
             if child_node.type not in ['comment', 'ERROR']:
                 ast_node._children_types.append(child_node.type)
 
-                child_ast_node = ASTNode.from_tree_sitter_node(fname)
+                child_ast_node = ASTNode.from_tree_sitter_node(fname, child_node)
                 ast_node._children.append(child_ast_node)
+        
+        return ast_node
 
     @property
     def fname(self) -> str:

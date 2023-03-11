@@ -18,11 +18,9 @@ class UncheckedIncrement(Detector):
             for_statements = source_unit.get_instances_of(ForStatement)
 
             # Filter for-loops that have either i++ or i--
-            for_statements = filter(
-                lambda for_statement: isinstance(UpdateOperation, for_statement.iteration),
-                for_statements
-            )
+            for for_statement in for_statements:
+                if isinstance(for_statement.iteration, UpdateOperation):
+                    result = self.generate_result_from_core_object(for_statement.iteration)
+                    results.append(result)
 
-            results.append(for_statements)
-
-        return self.generate_results_from_core_objects(results)
+        return results

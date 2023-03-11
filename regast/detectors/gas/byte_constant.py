@@ -25,7 +25,6 @@ class ByteConstant(Detector):
             for contract in source_unit.contracts:
                 state_variables = contract.get_instances_of(StateVariable)
                 string_constants = filter(is_string_constant, state_variables)
-
-                results.append(string_constants)
+                results.extend(string_constants)
 
         return self.generate_results_from_core_objects(results)
