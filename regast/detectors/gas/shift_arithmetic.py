@@ -9,6 +9,7 @@ from regast.detectors.result import Result
 class ShiftArithmetic(Detector):
     NAME = 'Use `<<` and `>>` instead of multiplication/division where possible' 
     CLASSIFICATION = DetectorClassification.GAS
+    DESCRIPTION = "A division/multiplication by any number `x` being a power of 2 can be calculated by shifting `log2(x)` to the right/left.\n\nWhile the `MUL` and `DIV` opcodes use 5 gas, the `SHL` and `SHR` opcodes only uses 3 gas. Furthermore, Solidity's division operation also includes a division-by-0 prevention which is bypassed using shifting."
 
     def detect(self) -> List[Result]:
         # Checks if n is a power of two (ie. 2**x = n)

@@ -11,7 +11,7 @@ from regast.detectors.result import Result
 
 class DetectorClassification(Enum):
     GAS = 1
-    QA = 2
+    NC = 2
     LOW = 3
     MEDIUM = 4
     HIGH = 5
@@ -75,6 +75,10 @@ class Detector(ABC):
     @abstractmethod
     def CLASSIFICATION(self) -> DetectorClassification:
         pass
+
+    @property
+    def DESCRIPTION(self) -> str:
+        return ''
 
     @abstractmethod
     def detect(self) -> List[Result]:

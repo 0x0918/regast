@@ -9,6 +9,7 @@ from regast.detectors.result import Result
 class CustomError(Detector):
     NAME = 'Use custom errors instead of `require` statements' 
     CLASSIFICATION = DetectorClassification.GAS
+    DESCRIPTION = "[Source](https://blog.soliditylang.org/2021/04/21/custom-errors/)\nInstead of using error strings, to reduce deployment and runtime cost, you should use Custom Errors. This would save both deployment and runtime cost."
 
     def detect(self) -> List[Result]:
         # Check if call expression is a require statement

@@ -10,6 +10,7 @@ from regast.detectors.result import Result
 class PostIncrement(Detector):
     NAME = '`++i` costs less gas than `i++` or `i += 1`' 
     CLASSIFICATION = DetectorClassification.GAS
+    DESCRIPTION = "Pre-increments and pre-decrements are cheaper than post-increments and post-decrements"
 
     def detect(self) -> List[Result]:
         # Checks for i += 1 or i -= 1

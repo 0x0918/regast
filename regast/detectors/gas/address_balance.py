@@ -9,6 +9,7 @@ from regast.detectors.result import Result
 class AddressBalance(Detector):
     NAME = 'Use `selfbalance()` instead of `address(this).balance`'
     CLASSIFICATION = DetectorClassification.GAS
+    DESCRIPTION = "Use assembly when getting a contract's balance of ETH.\n\nYou can use `selfbalance()` instead of `address(this).balance` when getting your contract's balance of ETH to save gas.\nAdditionally, you can use `balance(address)` instead of `address.balance()` when getting an external contract's balance of ETH.\n\n*Saves 15 gas when checking internal balance, 6 for external*"
 
     def detect(self) -> List[Result]:
         # Checks if member access is address(...).balance

@@ -11,6 +11,7 @@ from regast.detectors.result import Result
 class InitializeDefaultValue(Detector):
     NAME = 'Unnecessary initialization of variables with default values' 
     CLASSIFICATION = DetectorClassification.GAS
+    DESCRIPTION = "Don't initialize variables with default value"
 
     def detect(self) -> List[Result]:
         # Check if an expression matches address(0), taken from the AddressZero detector

@@ -11,6 +11,7 @@ from regast.detectors.result import Result
 class AddressZero(Detector):
     NAME = 'Use assembly to check for `address(0)`'
     CLASSIFICATION = DetectorClassification.GAS
+    DESCRIPTION = "*Saves 6 gas per instance*"
 
     def detect(self) -> List[Result]:
         # Checks if an expression matches address(0)
