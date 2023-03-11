@@ -45,7 +45,7 @@ rm -r regast
 The `regast` command can be used on either `.sol` file or a folder containing Solidity files:
 ```
 $ regast --help
-usage: __main__.py [-h] [-d <detector>] [-s <scope>] [-r <filename>] <contract>
+usage: __main__.py [-h] [-d <detector>] [-c <classifications>] [-s <scope>] [-r <filename>] <contract>
 
 Scan for vulnerabilities based on regex or AST queries.
 
@@ -56,6 +56,8 @@ options:
   -h, --help            show this help message and exit
   -d <detector>, --detectors <detector>
                         .py file or folder containing .py files which implement detectors
+  -c <classifications>, --classifications <classifications>
+                        Comma-separated list of classifications: GAS, NC, LOW, MEDIUM, HIGH
   -s <scope>, --scope <scope>
                         Text file containing a list of contracts in scope
   -r <filename>, --report <filename>
@@ -72,7 +74,9 @@ Below are the currently implemented detectors which **regast** runs by default. 
 | [`address_balance`](regast/detectors/gas/address_balance.py)                     | Use `selfbalance()` instead of `address(this).balance`.                   | Gas            |
 | [`address_zero`](regast/detectors/gas/address_zero.py)                           | Use assembly to check for `address(0)`.                                   | Gas            |
 | [`assign_update_array_value`](regast/detectors/gas/assign_update_array_value.py) | Update array values using `arr[i] += n` instead of `arr[i] = arr[i] + n`. | Gas            |
+| [`bool_comparison`](regast/detectors/gas/bool_comparison.py)                     | Don\'t compare booleans to `true` or `false`.                             | Gas            |
 | [`bool_storage`](regast/detectors/gas/bool_storage.py)                           | Using `bool` for storage incurs overhead.                                 | Gas            |
+| [`byte_constant`](regast/detectors/gas/byte_constant.py)                         | `bytes` constants are more efficient than `string` constants.             | Gas            |
 | [`cache_array_length`](regast/detectors/gas/cache_array_length.py)               | Cache array length outside of for-loops.                                  | Gas            |
 | [`custom_error`](regast/detectors/gas/custom_error.py)                           | Use custom errors instead of `require` statements.                        | Gas            |
 | [`initialize_default_value`](regast/detectors/gas/initialize_default_value.py)   | Unnecessary initialization of variables with default values               | Gas            |
@@ -81,6 +85,7 @@ Below are the currently implemented detectors which **regast** runs by default. 
 | [`private_constant`](regast/detectors/gas/private_constant.py)                   | Declare constants as `private` instead of non-public to save gas.         | Gas            |
 | [`shift_arithmetic`](regast/detectors/gas/shift_arithmetic.py)                   | Use `<<` and `>>` instead of multiplication/division where possible.      | Gas            |
 | [`split_require_statements`](regast/detectors/gas/split_require_statements.py)   | Use separate `require` statements instead of `&&`.                        | Gas            |
+| [`unchecked_increment`](regast/detectors/gas/unchecked_increment.py)             | 'Increments can be declared `unchecked` in for-loops'.                    | Gas            |
 | [`unsigned_comparison`](regast/detectors/gas/unsigned_comparison.py)             | Use `!= 0` instead of `> 0` for unsigned integer comparison.              | Gas            |
 
 ### Writing custom detectors

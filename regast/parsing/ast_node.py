@@ -1,32 +1,34 @@
-from typing import Dict, List, Optional
-from collections import defaultdict
+from typing import List, Optional
 
 import tree_sitter
 
-from regast.core.others.comment import Comment
-from regast.core.others.parse_error import ParseError
-
 
 class ASTNode:
-    def __init__(self, fname: str, node: tree_sitter.Node):
+    def __init__(self, fname: str):
         self._fname: str = fname
-        self._tree_sitter_node: tree_sitter.Node = node
-
+        self._tree_sitter_node: Optional[tree_sitter.Node] = None
+        
         self._children: List[ASTNode] = []
         self._children_types: List[str] = []
-        self._field_to_children: Dict[str, List[ASTNode]] = defaultdict(list)
 
-        self._comments: List[Comment] = []
-        self._parse_errors: List[ParseError] = []
-
-        self.parse_underlying_node(node)
+    @staticmethod
+    def from_tree_sitter_node(fname: str, node: tree_sitter.Node) -> 'ASTNode':
+        ast_node = ASTNode(fname)
+        ast_node._tree_sitter_node = node
         
+        for child_node in node.children:
+            if child_node.type not in ['comment', 'ERROR']:
+                ast_node._children_types.append(child_node.type)
+
+                child_ast_node = ASTNode.from_tree_sitter_node(fname)
+                ast_node._children.append(child_ast_node)
+
     @property
     def fname(self) -> str:
         return self._fname
 
     @property
-    def tree_sitter_node(self) -> tree_sitter.Node:
+    def tree_sitter_node(self) -> Optional[tree_sitter.Node]:
         return self._tree_sitter_node
 
     @property
@@ -44,40 +46,27 @@ class ASTNode:
     @property
     def children_types(self) -> List[str]:
         return list(self._children_types)
+    
+    def is_ancestor_of(self, child: tree_sitter.Node) -> bool:
+        """
+        Check if this node is an ancestor of child  
+        """
+        start_point_is_before = (
+            self.tree_sitter_node.start_point[0] < child.tree_sitter_node.start_point[0] or
+            self.tree_sitter_node.start_point[0] == child.tree_sitter_node.start_point[0] and
+            self.tree_sitter_node.start_point[1] <= child.tree_sitter_node.start_point[1]
+        )
+        
+        end_point_is_after = (
+            self.tree_sitter_node.end_point[0] > child.tree_sitter_node.end_point[0] or
+            self.tree_sitter_node.end_point[0] == child.tree_sitter_node.end_point[0] and
+            self.tree_sitter_node.end_point[1] >= child.tree_sitter_node.end_point[1]
+        )
 
-    @property
-    def comments(self) -> List[Comment]:
-        return list(self._comments)
-
-    @property
-    def parse_errors(self) -> List[ParseError]:
-        return list(self._parse_errors)
-
-    def child_by_field_name(self, field: str) -> Optional["ASTNode"]:
-        if field in self._field_to_children:
-            return self._field_to_children[field][0]
-
-    def children_by_field_name(self, field: str) -> List["ASTNode"]:
-        return self._field_to_children[field]
-
-    def parse_underlying_node(self, node):
-        for i in range(len(node.children)):
-            child_node = node.children[i]
-
-            match child_node.type:
-                case 'comment':
-                    self._comments.append(Comment(child_node))
-                case 'ERROR':
-                    self._parse_errors.append(ParseError(child_node))
-                case other:
-                    self._children_types.append(other)
-
-                    child = ASTNode(self.fname, child_node)
-                    self._children.append(child)
-                    self._comments.extend(child.comments)
-                    self._parse_errors.extend(child.parse_errors)
-
-                    field_name = node.field_name_for_child(i)
-                    if field_name:
-                        self._field_to_children[field_name].append(child)
-
+        return start_point_is_before and end_point_is_after
+    
+    def is_descendant_of(self, parent: tree_sitter.Node) -> bool:
+        """
+        Check if this node is a descendant of parent 
+        """
+        return parent.is_ancestor_of(self)

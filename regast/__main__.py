@@ -58,3 +58,12 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+"""
+cacheVariable.ts
+calldataViewFunctions.ts
+smallUintIncrement.ts
+storageVsMemoryStructArray.ts
+uselessInternal.ts
+"""
