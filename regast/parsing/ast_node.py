@@ -8,6 +8,7 @@ class ASTNode:
         self._fname: str = fname
         self._tree_sitter_node: Optional[tree_sitter.Node] = None
         
+        self.start_line = self.end_line = self.start_column = self.end_column = None
         self._children: List[ASTNode] = []
         self._children_types: List[str] = []
 
@@ -15,6 +16,8 @@ class ASTNode:
     def from_tree_sitter_node(fname: str, node: tree_sitter.Node) -> 'ASTNode':
         ast_node = ASTNode(fname)
         ast_node._tree_sitter_node = node
+        ast_node.start_line, ast_node.start_column = node.start_point
+        ast_node.end_line, ast_node.end_column = node.end_point
         
         for child_node in node.children:
             if child_node.type not in ['comment', 'ERROR']:
@@ -49,26 +52,26 @@ class ASTNode:
     def children_types(self) -> List[str]:
         return list(self._children_types)
     
-    def is_ancestor_of(self, child: tree_sitter.Node) -> bool:
+    def is_ancestor_of(self, node: tree_sitter.Node) -> bool:
         """
-        Check if this node is an ancestor of child  
+        Check if this node is an ancestor of node  
         """
         start_point_is_before = (
-            self.tree_sitter_node.start_point[0] < child.tree_sitter_node.start_point[0] or
-            self.tree_sitter_node.start_point[0] == child.tree_sitter_node.start_point[0] and
-            self.tree_sitter_node.start_point[1] <= child.tree_sitter_node.start_point[1]
+            self.start_line < node.start_line or
+            self.start_line == node.start_line and
+            self.start_column <= node.start_column
         )
         
         end_point_is_after = (
-            self.tree_sitter_node.end_point[0] > child.tree_sitter_node.end_point[0] or
-            self.tree_sitter_node.end_point[0] == child.tree_sitter_node.end_point[0] and
-            self.tree_sitter_node.end_point[1] >= child.tree_sitter_node.end_point[1]
+            self.end_line > node.end_line or
+            self.end_line == node.end_line and
+            self.end_column >= node.end_column
         )
 
         return start_point_is_before and end_point_is_after
     
-    def is_descendant_of(self, parent: tree_sitter.Node) -> bool:
+    def is_descendant_of(self, node: tree_sitter.Node) -> bool:
         """
-        Check if this node is a descendant of parent 
+        Check if this node is a descendant of node 
         """
-        return parent.is_ancestor_of(self)
+        return node.is_ancestor_of(self)

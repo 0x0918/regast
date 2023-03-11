@@ -1,4 +1,5 @@
 from typing import Dict, List, Tuple
+from regast.analysis.core_memoization import memoize_core_objects
 
 from regast.analysis.name_resolution import NameResolver
 from regast.core.declarations.source_unit import SourceUnit
@@ -23,6 +24,7 @@ class Regast:
         self.parser = Parser()
         for fname in self.fnames:
             source_unit = self.parser.parse(fname)
+            memoize_core_objects(source_unit)
             self.fname_to_source_unit[fname] = source_unit
 
         # Name resolution

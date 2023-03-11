@@ -19,8 +19,8 @@ class Result:
         return Result(
             node.fname,
             source,
-            node.tree_sitter_node.start_point[0] + 1,
-            node.tree_sitter_node.end_point[0] + 1
+            node.start_line + 1,
+            node.end_line + 1
         )
 
     @staticmethod

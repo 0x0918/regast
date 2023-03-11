@@ -192,9 +192,9 @@ class StatementParser:
                 _, open_bracket, *statements, close_bracket, body = node.children
 
                 # Since initial, condition and update are all optional, determine which is missing using text
-                offset = node.tree_sitter_node.start_point[1]
-                lo = open_bracket.tree_sitter_node.start_point[1]
-                hi = close_bracket.tree_sitter_node.start_point[1]
+                offset = node.start_column
+                lo = open_bracket.start_column
+                hi = close_bracket.start_column
                 
                 header_text = node.text[lo-offset+1:hi-offset]
                 missing_index = header_text.replace(' ', '').split(';').index('')
