@@ -10,11 +10,14 @@ from regast.detectors.result import Result
 
 
 class DetectorClassification(str, Enum):
-    GAS = 'Gas Optimizations'
-    NC = 'Low Risk Issues'
-    LOW = 'Non-Critical Issues'
-    MEDIUM = 'Hish Risk Findings'
-    HIGH = 'Medium Risk Findings'
+    GAS = 'G'
+    NC = 'N'
+    LOW = 'L'
+    MEDIUM = 'M'
+    HIGH = 'H'
+
+    def __str__(self):
+        return self.value
 
 class Detector(ABC):
     def __init__(self, fname_to_source_unit: Dict[str, SourceUnit]):

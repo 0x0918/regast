@@ -1,8 +1,8 @@
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from regast.analysis.name_resolution import NameResolver
 from regast.core.declarations.source_unit import SourceUnit
-from regast.detectors.detector import Detector, DetectorClassification
+from regast.detectors.detector import Detector
 from regast.detectors.result import Result
 from regast.parsing.parser import Parser
 
@@ -35,23 +35,5 @@ class Regast:
         instance = detector_class(self.fname_to_source_unit)
         self._detectors.append(instance)
 
-    def run_detectors(self) -> Dict[DetectorClassification, Dict[Detector, Dict[str, List[Result]]]]:
-        organized_results = {}
-        
-        for detector in self._detectors:
-            results = detector.detect()
-            
-            for result in results:
-                if detector.CLASSIFICATION not in organized_results:
-                    organized_results[detector.CLASSIFICATION] = {}
-                    
-                if detector not in organized_results[detector.CLASSIFICATION]:
-                    organized_results[detector.CLASSIFICATION][detector] = {}
-                    
-                if result.fname not in organized_results[detector.CLASSIFICATION][detector]:
-                    organized_results[detector.CLASSIFICATION][detector][result.fname] = []
-
-                organized_results[detector.CLASSIFICATION][detector][result.fname].append(result)
-
-        return organized_results
-        
+    def run_detectors(self) -> List[Tuple[Detector, Result]]:
+        return [(detector, results) for detector in self._detectors if (results := detector.detect())]        

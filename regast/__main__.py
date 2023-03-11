@@ -8,7 +8,7 @@ from regast.detectors.detector import Detector, DetectorClassification
 from regast.detectors.result import Result
 from regast.regast import Regast
 from regast.utilities.command_line import handle_arguments
-from regast.utilities.output import output_to_markdown, output_to_stdout
+from regast.utilities.output import Output
 from regast.utilities.setup_dependencies import initialize_dependencies
 
 
@@ -50,12 +50,11 @@ def main():
     # Run detectors
     results = get_results_from_ast(args)
 
-    # Output results to stdout
-    output_to_stdout(results)
-
-    # Generate report if specified
+    # Output results to stdout, and generate markdown report if specified
+    output = Output(results)
+    output.to_stdout()
     if args.report:
-        output_to_markdown(results)
+        output.to_markdown(args.report)
 
 if __name__ == '__main__':
     main()
