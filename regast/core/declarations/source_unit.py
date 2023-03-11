@@ -1,7 +1,6 @@
 from typing import List
 
 from regast.core.core import Core
-from regast.core.others.comment import Comment
 from regast.core.declarations.contracts.contract import Contract
 from regast.core.declarations.contracts.interface import Interface
 from regast.core.declarations.contracts.library import Library
@@ -95,10 +94,6 @@ class SourceUnit(Core):
     @property
     def type_definitions(self) -> List[TypeDefinition]:
         return list(self._type_definitions)
-
-    @property
-    def comments(self) -> List[Comment]:
-        return self.ast_node.comments
 
     @property
     def children(self) -> List:
