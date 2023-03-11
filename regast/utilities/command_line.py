@@ -1,8 +1,9 @@
 import argparse
 import os
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
+from regast.detectors.detector import DetectorClassification
 from regast.utilities.definitions import DETECTORS_PATH
 
 
@@ -44,7 +45,28 @@ def parse_argument_detectors(detector_path: str) -> List[str]:
 
     return [detector_path]
 
-def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[str]:
+def parse_argument_classifications(comma_separated_classifications: Optional[str]) -> Optional[List[DetectorClassification]]:
+    if not comma_separated_classifications:
+        return [dc for dc in DetectorClassification]
+
+    name_to_classification = {dc.name: dc for dc in DetectorClassification}
+    classification_names = ', '.join(dc.name for dc in DetectorClassification)
+
+    classifications = []
+
+    for classification_str in comma_separated_classifications.split(','):
+        if (cs := classification_str.strip()) in name_to_classification:
+            classifications.append(name_to_classification[cs])
+        else:
+            print(f'[!] classification: "{cs}" does not match any classification - {classification_names}.')
+            exit()
+
+    return classifications
+
+def parse_argument_scope(contract_fnames: List[str], scope_fname: Optional[str]) -> Optional[List[str]]:
+    if not scope_fname:
+        return
+
     if not os.path.isfile(scope_fname):
         print(f'[!] scope: {scope_fname} does not exist.')
         exit()
@@ -53,7 +75,7 @@ def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[s
         scope_lines = f.readlines()
 
         if not scope_lines:
-            print(f'[!] scope: {scope_fname} is empty')
+            print(f'[!] scope: {scope_fname} is empty.')
             exit()
 
         # Match all fnames in scope with actual files
@@ -62,7 +84,7 @@ def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[s
             filepaths = [x for x in contract_fnames if os.path.abspath(x).endswith(fname)]
 
             if not filepaths:
-                print(f'[!] scope: {fname} does not match any file')
+                print(f'[!] scope: {fname} does not match any file.')
                 exit()
 
             if len(filepaths) > 1:
@@ -74,11 +96,16 @@ def parse_argument_scope(contract_fnames: List[str], scope_fname: str) -> List[s
         
         return files_in_scope
 
-def parse_argument_report(fname: str):
+def parse_argument_report(fname: Optional[str]) -> Optional[str]:
+    if not fname:
+        return
+
     report_fname = f'{fname}.md'
     if os.path.exists(report_fname):
         print(f'[!] report: {report_fname} already exists.')
         exit()
+
+    return report_fname
 
 
 # def parse_argument_remap(remappings_fname: str) -> Dict[str, str]:
@@ -113,6 +140,13 @@ def handle_arguments() -> argparse.Namespace:
         default=DETECTORS_PATH,
         help='.py file or folder containing .py files which implement detectors'
     )
+    classification_names = ', '.join(dc.name for dc in DetectorClassification)
+    parser.add_argument(
+        '-c', '--classifications', 
+        metavar='<classifications>', 
+        type=str,
+        help=f'Comma-separated list of classifications: {classification_names}'
+    )
     parser.add_argument(
         '-s', '--scope', 
         metavar='<scope>', 
@@ -136,12 +170,10 @@ def handle_arguments() -> argparse.Namespace:
     args.contract = parse_argument_contract(args.contract)
     args.detectors = parse_argument_detectors(args.detectors)
 
-    if args.scope:
-        args.scope = parse_argument_scope(args.contract, args.scope)
+    args.classifications = parse_argument_classifications(args.classifications)
+    args.scope = parse_argument_scope(args.contract, args.scope)
+    args.report = parse_argument_report(args.report)
 
-    if args.report:
-        parse_argument_report(args.report)
-        
     # if args.remap is not None:
     #     args.remap = parse_argument_remap(args.remap)
 

@@ -34,7 +34,8 @@ def get_results_from_ast(args) -> Dict[DetectorClassification, Dict[Detector, Li
 
     # Run detectors and filter results
     for detector in get_detectors(args.detectors):
-        regast.register_detector(detector)
+        if detector.CLASSIFICATION in args.classifications:
+            regast.register_detector(detector)
 
     results = regast.run_detectors()
     return results

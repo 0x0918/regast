@@ -9,12 +9,12 @@ from regast.core.declarations.source_unit import SourceUnit
 from regast.detectors.result import Result
 
 
-class DetectorClassification(Enum):
-    GAS = 1
-    NC = 2
-    LOW = 3
-    MEDIUM = 4
-    HIGH = 5
+class DetectorClassification(str, Enum):
+    GAS = 'Gas Optimizations'
+    NC = 'Low Risk Issues'
+    LOW = 'Non-Critical Issues'
+    MEDIUM = 'Hish Risk Findings'
+    HIGH = 'Medium Risk Findings'
 
 class Detector(ABC):
     def __init__(self, fname_to_source_unit: Dict[str, SourceUnit]):
